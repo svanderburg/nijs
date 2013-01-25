@@ -1,0 +1,17 @@
+{
+  "name" : "nijs",
+  "version" : "0.0.1",
+  "description" : "An internal DSL for the Nix package manager in JavaScript",
+  "repository" : {
+    "type" : "git",
+    "url" : ""
+  },
+  "author" : "Sander van der Burg <svanderburg@gmail.com>",
+  "license" : "MIT",
+  "bin" : {
+    "nijs-build" : "./bin/nijs-build.js"
+  },
+  "dependencies" : {
+    "optparse" : ">= 1.0.3"
+  }
+}
