@@ -62,6 +62,12 @@ var pkgs = {
     return require('./pkgs/stringWriteTest.js').pkg({
       writeTextFile : pkgs.writeTextFile
     });
+  },
+  
+  appendFilesTest : function() {
+    return require('./pkgs/appendFilesTest.js').pkg({
+      stdenv : pkgs.stdenv
+    });
   }
 };
 
