@@ -141,7 +141,7 @@ Building packages programmatically
 The `callNixBuild()` function can be used to build a generated Nix expression:
 
     var nijs = require('nijs');
-    var pkgs = require('pkgs.js');
+    var pkgs = require('pkgs.js').pkgs;
 
     nijs.callNixBuild({
       nixObject : pkgs.hello(),
