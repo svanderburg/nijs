@@ -4,13 +4,14 @@
   "description" : "An internal DSL for the Nix package manager in JavaScript",
   "repository" : {
     "type" : "git",
-    "url" : ""
+    "url" : "https://github.com/svanderburg/nijs.git"
   },
   "author" : "Sander van der Burg <svanderburg@gmail.com>",
   "license" : "MIT",
   "bin" : {
     "nijs-build" : "./bin/nijs-build.js"
   },
+  "main" : "./lib/nijs",
   "dependencies" : {
     "optparse" : ">= 1.0.3"
   }

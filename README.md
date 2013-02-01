@@ -193,7 +193,7 @@ integers and writes the result to a text file in the Nix store:
       buildCommand = ''
         echo ${toString (sum 1 2)} > $out
       '';
-}
+    }
 
 As can be observed, the `nijsFunProxy` is a very thin layer that propagates the
 Nix function parameters to the JavaScript function (Nix objects are conversed to
