@@ -21,6 +21,7 @@ Prerequisites
 =============
 * In order to use the components in this package, a [Node.js](http://nodejs.org) installation is required.
 * To use the `nijs-build` command-line utility, we require the [optparse](https://github.com/jfd/optparse-js) library to be installed either through Nix or NPM
+* Of course, since this package provides a feature for Nix, we require the [Nix package manager](http://nixos.org/nix) to be installed
 
 Installation
 ============
@@ -206,6 +207,50 @@ in mind:
 * We cannot use variables outside the scope of the function, e.g. global variables.
 * We must always return something. If nothing is returned, we will have an undefined object, which cannot be converted.
 * Functions with a variable number of positional arguments are not supported, as Nix functions don't support this.
+
+It may be very annoying to only use self contained JavaScript code fragments, as
+we cannot access anything outside the function's scope. Fortunately, the
+`nijsFunProxy` can also take Node packages through Nix as parameters and make
+them available to that function. The following code fragment uses the [Underscore](http://underscorejs.org)
+library to convert a list of integers to a list of strings:
+
+    {stdenv, underscore, nijsFunProxy}:
+
+    let
+      underscoreTestFun = numbers: nijsFunProxy {
+        function = ''
+          function underscoreTestFun(numbers) {
+            var words = [ "one", "two", "three", "four", "five" ];
+            var result = [];
+          
+            _.each(numbers, function(elem) {
+              result.push(words[elem - 1]);
+            });
+        
+            return result;
+          }
+        '';
+        args = [ numbers ];
+        modules = [ underscore ];
+        requires = [
+          { var = "_"; module = "underscore"; }
+        ];
+      };
+    in
+    stdenv.mkDerivation {
+      name = "underscoreTest";
+  
+      buildCommand = ''
+        echo ${toString (underscoreTestFun [ 5 4 3 2 1 ])} > $out
+      '';
+    }
+
+The `modules` parameter is a list of Node.JS packages (provided through Nixpkgs)
+and the `require` parameter is a list taking var and module pairs. The latter
+parameter is used to automatically generate a collection of require statements.
+In this case, it adds the following line before the function definition:
+
+    var _ = require('underscore');
 
 Examples
 ========

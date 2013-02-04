@@ -1,5 +1,5 @@
 {stdenv, nodejs}:
-{function, args}:
+{function, args, modules ? [], requires ? []}:
 
 let
   nixToJS = expr:
@@ -15,11 +15,14 @@ let
 in
 import (stdenv.mkDerivation {
   name = "function-proxy";
-  buildInputs = [ nodejs ];
+  buildInputs = [ nodejs ] ++ modules;
   buildCommand = ''
     (
     cat <<EOF
     var nijs = require('${./nijs.js}');
+    
+    ${stdenv.lib.concatMapStrings (require: "var ${require.var} = require('${require.module}');\n") requires}
+    
     var fun = ${function};
     
     var args = [
