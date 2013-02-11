@@ -7,7 +7,7 @@ var nijs = require('../lib/nijs.js');
  *
  * @param {string} filename Path to the package composition CommonJS module
  * @param {string} attr Name of the package to evaluate
- * @return {object} A object having a _type set to Nix and a value that contains the generated Nix expression
+ * @return {object} An object having a _type set to nix and a value that contains the generated Nix expression
  */
 function evaluatePackage(filename, attr) {
     var pkgs = require(path.resolve(filename)).pkgs;
