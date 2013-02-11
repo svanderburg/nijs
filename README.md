@@ -75,7 +75,7 @@ source code. In the `tests/` folder, we have defined a packages repository:
 
 By using this proxy we can also describe our own package specifications in
 JavaScript, instead of the Nix expression language. Every package build recipe
-can be written as a CommonJS module, that may looks as follows:
+can be written as a CommonJS module, that may look as follows:
 
     exports.pkg = function(args) {
       return args.stdenv().mkDerivation ({
@@ -99,16 +99,16 @@ can be written as a CommonJS module, that may looks as follows:
       });
     };
 
-A package build export the `pkg` property, which refers to a function definition
-taking the build-time dependencies of the package as argument object. In the
-body of the function, we return the result of an invocation to the
+A package module exports the `pkg` property, which refers to a function
+definition taking the build-time dependencies of the package as argument object.
+In the body of the function, we return the result of an invocation to the
 `mkDerivation()` function that builds a package from source code. To this
 function we pass essential build parameters, such as the source code.
 
 As with ordinary Nix expressions, we cannot use this CommonJS module to build a
 package directly. We have to compose it by calling it with its required function
 arguments. Composition is done in the composition module: `pkgs.js` in the
-`tests/ folder`. The structure of this file is as follows:
+`tests/` folder. The structure of this file is as follows:
 
     var pkgs = {
 
@@ -134,8 +134,8 @@ arguments. Composition is done in the composition module: `pkgs.js` in the
 
 The above module exports the `pkgs` property that refers to an object in which
 each member refers to a function definition. These functions call the package
-modules with its required parameters. By applying these functions, a Nix
-expression get generated that can be built by the Nix package manager.
+modules with its required parameters. By evaluating these functions, a Nix
+expression gets generated that can be built by the Nix package manager.
 
 Building packages programmatically
 ----------------------------------
@@ -146,6 +146,7 @@ The `callNixBuild()` function can be used to build a generated Nix expression:
 
     nijs.callNixBuild({
       nixObject : pkgs.hello(),
+      params : [],
       onSuccess : function(result) {
         process.stdout.write(result + "\n");
       },
@@ -155,7 +156,7 @@ The `callNixBuild()` function can be used to build a generated Nix expression:
     });
 
 In the code fragment above we call the `callNixBuild` function, in which we
-evaluate the hello package that gets build asynchronously by Nix. The
+evaluate the hello package that gets built asynchronously by Nix. The
 `onSuccess()` callback function is called when the build succeeds with the
 resulting Nix store path as function parameter. The store path is printed on the
 standard output. If the build fails, the `onFailure()` callback function is
@@ -168,6 +169,12 @@ that can do the same. The following instruction builds the hello package from th
 composition module (`pkgs.js`):
 
     $ nijs-build pkgs.js -A hello
+
+It may also be useful to see what kind of Nix expression is generated for
+debugging or testing purposes. The `--eval-only` option prints the generated
+Nix expression on the standard output:
+
+    $ nijs-build pkgs.js -A hello --eval-only
 
 Calling JavaScript functions from Nix expressions
 -------------------------------------------------
@@ -197,7 +204,7 @@ integers and writes the result to a text file in the Nix store:
     }
 
 As can be observed, the `nijsFunProxy` is a very thin layer that propagates the
-Nix function parameters to the JavaScript function (Nix objects are conversed to
+Nix function parameters to the JavaScript function (Nix objects are converted to
 JavaScript object) and the resulting JavaScript object is translated back to a
 Nix expression.
 

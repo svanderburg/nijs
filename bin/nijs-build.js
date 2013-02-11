@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 
 var optparse = require('optparse');
-var fs = require('fs');
-var path = require('path');
-var nijs = require('../lib/nijs.js');
+var operations = require('./operations.js');
 
 /* Define command-line options */
 
@@ -124,19 +122,18 @@ if(attr === null) {
 
 /* Perform the desired operation */
 
-var pkgs = require(path.resolve(filename)).pkgs;
-var pkg = pkgs[attr]();
-
 if(evalOnly) {
-    process.stdout.write(pkg.value + "\n");
+    operations.evaluateModule({
+        filename : filename,
+        attr : attr
+    });
 } else {
-    nijs.callNixBuild({
-        nixObject : pkg,
-        onSuccess : function(result) {
-            process.stdout.write(result + "\n");
-        },
-        onFailure : function(code) {
-            process.exit(code);
-        }
+    operations.nixBuild({
+        filename : filename,
+        attr : attr,
+        showTrace : showTrace,
+        keepFailed : keepFailed,
+        outLink : outLink,
+        noOutLink : noOutLink
     });
 }
