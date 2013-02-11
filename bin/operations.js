@@ -16,7 +16,7 @@ function evaluatePackage(filename, attr) {
 }
 
 /**
- * Evaluates the package expression and redirects it to the standard output.
+ * Evaluates the given package expression and redirects it to the standard output.
  *
  * @param {object} args Arguments to this function
  * @param {string} args.filename Path to the package composition CommonJS module
@@ -28,6 +28,8 @@ exports.evaluateModule = function(args) {
 };
 
 /**
+ * Evaluates the given package expression and invokes nix-build to build it.
+ *
  * @param args Arguments to this function
  * @param args.filename Path to the package composition CommonJS module
  * @param args.attr Name of the package to evaluate
