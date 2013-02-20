@@ -1,5 +1,5 @@
 {stdenv, nodejs}:
-{function, args, modules ? [], requires ? []}:
+{function, args, modules ? [], requires ? [], async ? false}:
 
 let
   nixToJS = import ./nixToJS.nix { inherit stdenv; };
@@ -13,17 +13,37 @@ import (stdenv.mkDerivation {
     var fs = require('fs');
     var nijs = require('${./nijs.js}');
     
+    /* Import all the CommonJS modules that we like to use in this function */
     ${stdenv.lib.concatMapStrings (require: "var ${require.var} = require('${require.module}');\n") requires}
     
+    /* Define the JavaScript function */
     var fun = ${function};
     
+    /* Convert the function arguments to JavaScript */
     var args = [
       ${stdenv.lib.concatMapStrings (arg: nixToJS arg+",\n") args}
     ];
     
+    /* Define callback interfaces for asynchronous functions */
+    
+    var nijsCallbacks = {
+        onSuccess : function(result) {
+            fs.writeFileSync("$out", nijs.jsToNix(result));
+        },
+    
+        onFailure : function(status) {
+            process.exit(status);
+        }
+    };
+    
+    /* Evaluate the function */
     var result = fun.apply(this, args);
-    fs.writeFileSync("$out", nijs.jsToNix(result));
+    
+    ${stdenv.lib.optionalString (!async) ''
+      /* Return the evaluation result */
+      nijsCallbacks.onSuccess(result);
+    ''}
     EOF
-    ) | node > $out
+    ) | node
   '';
 })

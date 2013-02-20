@@ -25,4 +25,9 @@ rec {
     inherit (pkgs.nodePackages) underscore;
     inherit nijsFunProxy;
   };
+  
+  timerTest = import ./proxytests/timerTest.nix {
+    inherit (pkgs) stdenv;
+    inherit nijsFunProxy;
+  };
 }
