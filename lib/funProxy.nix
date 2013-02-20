@@ -10,6 +10,7 @@ import (stdenv.mkDerivation {
   buildCommand = ''
     (
     cat <<EOF
+    var fs = require('fs');
     var nijs = require('${./nijs.js}');
     
     ${stdenv.lib.concatMapStrings (require: "var ${require.var} = require('${require.module}');\n") requires}
@@ -21,7 +22,7 @@ import (stdenv.mkDerivation {
     ];
     
     var result = fun.apply(this, args);
-    process.stdout.write(nijs.jsToNix(result));
+    fs.writeFileSync("$out", nijs.jsToNix(result));
     EOF
     ) | node > $out
   '';

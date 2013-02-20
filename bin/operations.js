@@ -30,13 +30,13 @@ exports.evaluateModule = function(args) {
 /**
  * Evaluates the given package expression and invokes nix-build to build it.
  *
- * @param args Arguments to this function
- * @param args.filename Path to the package composition CommonJS module
- * @param args.attr Name of the package to evaluate
- * @param args.showTrace Indicates whether an error trace must be shown
- * @param args.keepFailed Specifies whether the build result must be kept in case of an error
- * @param args.outLink Specifies the path to the resulting output symlink
- * @param args.noOutLink Disables the creation of the result symlink
+ * @param {object} args Arguments to this function
+ * @param {string} args.filename Path to the package composition CommonJS module
+ * @param {string} args.attr Name of the package to evaluate
+ * @param {string} args.showTrace Indicates whether an error trace must be shown
+ * @param {string} args.keepFailed Specifies whether the build result must be kept in case of an error
+ * @param {string} args.outLink Specifies the path to the resulting output symlink
+ * @param {boolean} args.noOutLink Disables the creation of the result symlink
  */
 exports.nixBuild = function(args) {
     /* Evaluate the package */
