@@ -111,7 +111,7 @@ if(help) {
 /* Verify the input parameters */
 
 if(filename === null) {
-    process.stderr.write("No packages JavaScript module is specified!\n");
+    process.stderr.write("No packages CommonJS module is specified!\n");
     process.exit(1);
 }
 
