@@ -183,10 +183,14 @@ This can be done by using the `nijsFunProxy` Nix function. The following code
 fragment shows a Nix expression using the `sum()` JavaScript function to add two
 integers and writes the result to a text file in the Nix store:
 
-    {stdenv}:
+    {stdenv, nodejs}:
 
     let
-      sum = a: b: import <nijs/funProxy.nix> {
+      nijsFunProxy = import <nijs/funProxy.nix> {
+        inherit stdenv nodejs;
+      };
+    
+      sum = a: b: nijsFunProxy {
         function = ''
           function sum(a, b) {
             return a + b;
@@ -223,9 +227,13 @@ we cannot access anything outside the function's scope. Fortunately, the
 them available to that function. The following code fragment uses the [Underscore](http://underscorejs.org)
 library to convert a list of integers to a list of strings:
 
-    {stdenv, underscore, nijsFunProxy}:
+    {stdenv, nodejs, underscore}:
 
     let
+      nijsFunProxy = import <nijs/funProxy.nix> {
+        inherit stdenv nodejs;
+      };
+      
       underscoreTestFun = numbers: nijsFunProxy {
         function = ''
           function underscoreTestFun(numbers) {
@@ -273,9 +281,13 @@ case of success or the `nijsCallbacks.onFailure()` function in case of a failure
 The following example uses a timer that calls the success callback function
 after three seconds, with a standard greeting message:
 
-    {stdenv, nijsFunProxy}:
+    {stdenv, nodejs}:
     
     let
+      nijsFunProxy = import <nijs/funProxy.nix> {
+        inherit stdenv nodejs;
+      };
+      
       timerTest = message: nijsFunProxy {
         function = ''
           function timerTest(message) {
