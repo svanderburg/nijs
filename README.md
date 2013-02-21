@@ -52,18 +52,15 @@ proxies a call to the `stdenv.mkDerivation` function in Nix:
     var nijs = require('nijs');
 
     function mkDerivation(args) {
-        return {
-            _type : "nix",
-            value : "pkgs.stdenv.mkDerivation "+nijs.jsToNix(args)
-        };
+        return new nijs.NixExpression("pkgs.stdenv.mkDerivation "+nijs.jsToNix(args));
     }
 
 As can be observed, a function proxy has a very simple structure. It always
-returns an object with a `_type` field that is set to `nix` and a value
+returns an object instance of the `NixExpression` prototype with a value
 representing a string that contains a generated Nix expression. To generate a
 function call, we have to provide the function name and the arguments. The
 arguments can be generated automatically by converting the arguments of the
-JavaScript function (which are JavaScript objects) to Nix language object by
+JavaScript function (which are JavaScript objects) to Nix language objects by
 using the `jsToNix()` function.
 
 Specifying packages
@@ -77,12 +74,14 @@ By using this proxy we can also describe our own package specifications in
 JavaScript, instead of the Nix expression language. Every package build recipe
 can be written as a CommonJS module, that may look as follows:
 
+    var nijs = require('nijs');
+
     exports.pkg = function(args) {
       return args.stdenv().mkDerivation ({
         name : "hello-2.8",
     
         src : args.fetchurl({
-          url : "mirror://gnu/hello/hello-2.8.tar.gz",
+          url : new nijs.NixURL("mirror://gnu/hello/hello-2.8.tar.gz"),
           sha256 : "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"
         }),
   
@@ -90,10 +89,7 @@ can be written as a CommonJS module, that may look as follows:
 
         meta : {
           description : "A program that produces a familiar, friendly greeting",
-          homepage : {
-            _type : "url",
-            value : "http://www.gnu.org/software/hello/manual"
-          },
+          homepage : new nijs.NixURL("http://www.gnu.org/software/hello/manual"),
           license : "GPLv3+"
         }
       });
@@ -103,12 +99,18 @@ A package module exports the `pkg` property, which refers to a function
 definition taking the build-time dependencies of the package as argument object.
 In the body of the function, we return the result of an invocation to the
 `mkDerivation()` function that builds a package from source code. To this
-function we pass essential build parameters, such as the source code.
+function we pass essential build parameters, such as the URL from which the
+source code can be obtained.
+
+Nix has special types for URLs and files to check whether they are in the valid
+format and that they are automatically imported into the Nix store for purity.
+As they are not in the JavaScript language, we can artificially create them
+through objects that are instances of `NixFile` and `NixURL`.
 
 As with ordinary Nix expressions, we cannot use this CommonJS module to build a
-package directly. We have to compose it by calling it with its required function
-arguments. Composition is done in the composition module: `pkgs.js` in the
-`tests/` folder. The structure of this file is as follows:
+package directly. We have to *compose* it by calling it with its required
+function arguments. Composition is done in the composition module: `pkgs.js` in
+the `tests/` folder. The structure of this file is as follows:
 
     var pkgs = {
 

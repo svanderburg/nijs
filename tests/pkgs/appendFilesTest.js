@@ -1,18 +1,18 @@
+var nijs = require('../../lib/nijs.js');
+
 exports.pkg = function(args) {
   return args.stdenv().mkDerivation ({
     name : "appendFiles",
         
-    appendFileA : {
-      _type : "file",
+    appendFileA : new nijs.NixFile ({
       value : "./appendFileA/text.txt",
       module : module
-    },
+    }),
         
-    appendFileB : {
-      _type : "file",
+    appendFileB : new nijs.NixFile ({
       value : "./append File B/text.txt",
       module : module
-    },
+    }),
         
     buildCommand : "cat $appendFileA $appendFileB > $out"
   });

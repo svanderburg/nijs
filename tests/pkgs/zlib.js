@@ -1,3 +1,3 @@
 var nijs = require('../../lib/nijs.js');
 
-exports.pkg = { _type : "nix", value : "pkgs.zlib" };
+exports.pkg = new nijs.NixExpression("pkgs.zlib");
