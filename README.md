@@ -215,6 +215,8 @@ in mind:
 * We must always return something. If nothing is returned, we will have an undefined object, which cannot be converted.
 * Functions with a variable number of positional arguments are not supported, as Nix functions don't support this.
 
+Using CommonJS modules in embedded JavaScript functions
+-------------------------------------------------------
 It may be very annoying to only use self contained JavaScript code fragments, as
 we cannot access anything outside the function's scope. Fortunately, the
 `nijsFunProxy` can also take Node packages through Nix as parameters and make
@@ -258,6 +260,41 @@ parameter is used to automatically generate a collection of require statements.
 In this case, it adds the following line before the function definition:
 
     var _ = require('underscore');
+
+Calling asynchronous JavaScript functions from Nix expressions
+--------------------------------------------------------------
+In Node.js, most of the standard utility functions are *asynchronous*, which
+will return immediately, and invoke a callback function when the task is done.
+To allow these functions to be used inside a Nix expression, we must set the
+`async` parameter to true in the `nijsFunProxy`. Furthermore, instead of
+returning an object, we must call the `nijsCallbacks.onSuccess()` function in
+case of success or the `nijsCallbacks.onFailure()` function in case of a failure.
+
+The following example uses a timer that calls the success callback function
+after three seconds, with a standard greeting message:
+
+    {stdenv, nijsFunProxy}:
+    
+    let
+      timerTest = message: nijsFunProxy {
+        function = ''
+          function timerTest(message) {
+            setTimeout(function() {
+              nijsCallbacks.onSuccess(message);
+            }, 3000);
+          }
+        '';
+        args = [ message ];
+        async = true;
+      };
+    in
+    stdenv.mkDerivation {
+      name = "timerTest";
+  
+      buildCommand = ''
+        echo ${timerTest "Hello world! The timer test works!"} > $out
+      '';
+    }
 
 Examples
 ========
