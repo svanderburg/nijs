@@ -1,7 +1,7 @@
 {stdenv, underscore, nijsInlineProxy}:
 
 stdenv.mkDerivation {
-  name = "createFileWithMessage";
+  name = "createFileWithUnderscore";
   buildCommand = nijsInlineProxy {
     modules = [ underscore ];
     requires = [

@@ -359,32 +359,9 @@ builder. In our example, `process.env['out']` is an environment variable
 containing the Nix store output path of our package.
 
 The `nijsInlineProxy` has the same limitations as the `nijsFunProxy`, such as the
-fact that global variables cannot be accessed.
-
-Moreover, like the `nijsFunProxy` it can also take the `modules` parameter
-allowing one to utilise external node.js packages. For example the following
-example uses the `underscore` library:
-
-    {stdenv, underscore, nijsInlineProxy}:
-
-    stdenv.mkDerivation {
-      name = "createFileWithMessage";
-      buildCommand = nijsInlineProxy {
-        modules = [ underscore ];
-        requires = [
-          { var = "fs"; module = "fs"; }
-          { var = "_"; module = "underscore"; }
-        ];
-        code = ''
-          var words = [ "This", "is", "very", "cool" ];
-          var message = _.sortBy(words, function(word) {
-              return word.toLowerCase().charAt(0);
-          });
-      
-         fs.writeFileSync(process.env['out'], message.toString());
-        '';
-      };
-    }
+fact that global variables cannot be accessed. Moreover, like the `nijsFunProxy`
+it can also take the `modules` parameter allowing one to utilise external node.js
+packages.
 
 Writing inline JavaScript code in a NiJS package specification
 --------------------------------------------------------------
@@ -418,9 +395,8 @@ expression example containing inline JavaScript code.
 
 The `buildCommand` parameter is bound to an instance of the `NixInlineJS`
 prototype. The `code` parameter can be either a JavaScript function (that takes
-no parameters) or a string that contains embedded JavaScript function.
-
-The former case (the function approach) has the advantage that its syntax can be
+no parameters) or a string that contains embedded JavaScript function. The
+former case (the function approach) has the advantage that its syntax can be
 checked or visualised by an editor, interpreter or compiler.
 
 Examples
