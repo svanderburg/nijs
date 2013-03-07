@@ -395,7 +395,7 @@ expression example containing inline JavaScript code.
 
 The `buildCommand` parameter is bound to an instance of the `NixInlineJS`
 prototype. The `code` parameter can be either a JavaScript function (that takes
-no parameters) or a string that contains embedded JavaScript function. The
+no parameters) or a string that contains embedded JavaScript code. The
 former case (the function approach) has the advantage that its syntax can be
 checked or visualised by an editor, interpreter or compiler.
 
