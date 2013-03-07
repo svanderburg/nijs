@@ -5,6 +5,10 @@ rec {
     inherit (pkgs) stdenv nodejs;
   };
   
+  nijsInlineProxy = import ../lib/inlineProxy.nix {
+    inherit (pkgs) stdenv writeTextFile nodejs;
+  };
+  
   sum = import ./proxytests/sum.nix {
     inherit (pkgs) stdenv;
     inherit nijsFunProxy;
@@ -29,5 +33,16 @@ rec {
   timerTest = import ./proxytests/timerTest.nix {
     inherit (pkgs) stdenv;
     inherit nijsFunProxy;
+  };
+  
+  createFileWithMessage = import ./proxytests/createFileWithMessage.nix {
+    inherit (pkgs) stdenv;
+    inherit nijsInlineProxy;
+  };
+  
+  createFileWithUnderscore = import ./proxytests/createFileWithUnderscore.nix {
+    inherit (pkgs) stdenv;
+    inherit (pkgs.nodePackages) underscore;
+    inherit nijsInlineProxy;
   };
 }

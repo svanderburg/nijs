@@ -68,6 +68,12 @@ var pkgs = {
     return require('./pkgs/appendFilesTest.js').pkg({
       stdenv : pkgs.stdenv
     });
+  },
+  
+  createFileWithMessageTest : function() {
+    return require('./pkgs/createFileWithMessageTest.js').pkg({
+      stdenv : pkgs.stdenv
+    });
   }
 };
 

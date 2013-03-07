@@ -105,8 +105,11 @@ source code can be obtained.
 Nix has special types for URLs and files to check whether they are in the valid
 format and that they are automatically imported into the Nix store for purity.
 As they are not in the JavaScript language, we can artificially create them
-through objects that are instances of `NixFile` and `NixURL`.
+through objects that are instances of the `NixFile` and `NixURL` prototypes.
 
+
+Composing packages
+------------------
 As with ordinary Nix expressions, we cannot use this CommonJS module to build a
 package directly. We have to *compose* it by calling it with its required
 function arguments. Composition is done in the composition module: `pkgs.js` in
@@ -309,6 +312,116 @@ after three seconds, with a standard greeting message:
         echo ${timerTest "Hello world! The timer test works!"} > $out
       '';
     }
+
+Writing inline JavaScript code in Nix expressions
+-------------------------------------------------
+All the examples so far use generic building procedures or refer to JavaScript
+functions that expose themselves as Nix functions. Sometimes it may also be
+required to implement a custom build procedure for a package. Nix uses the Bash
+shell as its default builder, hence it requires developers to implement custom
+build steps as shell code embedded in strings.
+
+It may also be desired to implement custom build procedure steps as embedded
+JavaScript code, instead of embedded shell code. The `nijsInlineProxy` function
+allows a developer to write inline JavaScript code inside a Nix expression:
+
+    {stdenv}:
+
+    let
+      nijsInlineProxy = import <nijs/inlineProxy.nix> {
+        inherit stdenv writeTextFile nodejs;
+      };
+    in
+    stdenv.mkDerivation {
+      name = "createFileWithMessage";
+      buildCommand = nijsInlineProxy {
+        requires = [
+          { var = "fs"; module = "fs"; }
+          { var = "path"; module = "path"; }
+        ];
+        code = ''
+          fs.mkdirSync(process.env['out']);
+          var message = "Hello world written through inline JavaScript!";
+          fs.writeFileSync(path.join(process.env['out'], "message.txt"), message);
+        '';
+      };
+    }
+
+The above example Nix expression implements a custom build procedure that
+creates a Nix component containing a file named `message.txt` with a standard
+greeting message. As you may see, instead of providing a custom `buildCommand`
+that contains shell code we invoke the `nijsInlineProxy` that uses two CommonJS
+modules. The code implements our custom build procedure in JavaScript.
+
+As with ordinary Nix expressions, the parameters passed to `stdenv.mkDerivation`
+and its generic properties are accessible as environment variables inside the
+builder. In our example, `process.env['out']` is an environment variable
+containing the Nix store output path of our package.
+
+The `nijsInlineProxy` has the same limitations as the `nijsFunProxy`, such as the
+fact that global variables cannot be accessed.
+
+Moreover, like the `nijsFunProxy` it can also take the `modules` parameter
+allowing one to utilise external node.js packages. For example the following
+example uses the `underscore` library:
+
+    {stdenv, underscore, nijsInlineProxy}:
+
+    stdenv.mkDerivation {
+      name = "createFileWithMessage";
+      buildCommand = nijsInlineProxy {
+        modules = [ underscore ];
+        requires = [
+          { var = "fs"; module = "fs"; }
+          { var = "_"; module = "underscore"; }
+        ];
+        code = ''
+          var words = [ "This", "is", "very", "cool" ];
+          var message = _.sortBy(words, function(word) {
+              return word.toLowerCase().charAt(0);
+          });
+      
+         fs.writeFileSync(process.env['out'], message.toString());
+        '';
+      };
+    }
+
+Writing inline JavaScript code in a NiJS package specification
+--------------------------------------------------------------
+When implementing a custom build procedure in a NiJS package module, we may also
+run into the same inconvenience of having to embed custom build steps as shell
+code embedded in strings. We can also use the `nijsInlineProxy` from a NiJS
+package module, by creating an object that is an instance of the `NixInlineJS`
+prototype:
+
+    var nijs = require('nijs');
+
+    exports.pkg = function(args) {
+      return args.stdenv().mkDerivation ({
+        name : "createFileWithMessageTest",
+        buildCommand : new nijs.NixInlineJS({
+          requires : [
+            { "var" : "fs", "module" : "fs" },
+            { "var" : "path", "module" : "path" }
+          ],
+          code : function() {
+            fs.mkdirSync(process.env['out']);
+            var message = "Hello world written through inline JavaScript!";
+            fs.writeFileSync(path.join(process.env['out'], "message.txt"), message);
+          }
+        })
+      });
+    };
+
+The above NiJS package module shows the NiJS equivalent of our first Nix
+expression example containing inline JavaScript code.
+
+The `buildCommand` parameter is bound to an instance of the `NixInlineJS`
+prototype. The `code` parameter can be either a JavaScript function (that takes
+no parameters) or a string that contains embedded JavaScript function.
+
+The former case (the function approach) has the advantage that its syntax can be
+checked or visualised by an editor, interpreter or compiler.
 
 Examples
 ========

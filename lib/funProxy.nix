@@ -5,7 +5,7 @@ let
   nixToJS = import ./nixToJS.nix { inherit stdenv; };
 in
 import (stdenv.mkDerivation {
-  name = "function-proxy";
+  name = "function-proxy.nix";
   buildInputs = [ nodejs ] ++ modules;
   buildCommand = ''
     (
