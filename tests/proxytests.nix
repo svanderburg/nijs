@@ -1,6 +1,6 @@
 {pkgs ? import <nixpkgs> {} }:
 
-rec {
+let
   nijsFunProxy = import ../lib/funProxy.nix {
     inherit (pkgs) stdenv nodejs;
   };
@@ -8,7 +8,8 @@ rec {
   nijsInlineProxy = import ../lib/inlineProxy.nix {
     inherit (pkgs) stdenv writeTextFile nodejs;
   };
-  
+in
+rec {
   sum = import ./proxytests/sum.nix {
     inherit (pkgs) stdenv;
     inherit nijsFunProxy;

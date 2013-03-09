@@ -1,12 +1,18 @@
+/**
+ * @static @class operations
+ * Contains NiJS operations to be executed from the command-line interface.
+ */
 var path = require('path');
 var nijs = require('../lib/nijs.js');
 
 /**
+ * @member operations
+ *
  * Imports the given package composition CommonJS module and evaluates the
  * specified package.
  *
- * @param {string} filename Path to the package composition CommonJS module
- * @param {string} attr Name of the package to evaluate
+ * @param {String} filename Path to the package composition CommonJS module
+ * @param {String} attr Name of the package to evaluate
  * @return {NixExpression} An object instance of the NixExpression prototype containing a value with the generated Nix expression
  */
 function evaluatePackage(filename, attr) {
@@ -16,11 +22,13 @@ function evaluatePackage(filename, attr) {
 }
 
 /**
+ * @member operations
+ *
  * Evaluates the given package expression and redirects it to the standard output.
  *
- * @param {object} args Arguments to this function
- * @param {string} args.filename Path to the package composition CommonJS module
- * @param {string} args.attr Name of the package to evaluate
+ * @param {Object} args Arguments to this function
+ * @param {String} args.filename Path to the package composition CommonJS module
+ * @param {String} args.attr Name of the package to evaluate
  */
 exports.evaluateModule = function(args) {
     var pkg = evaluatePackage(args.filename, args.attr);
@@ -28,17 +36,19 @@ exports.evaluateModule = function(args) {
 };
 
 /**
+ * @member operations
+ *
  * Evaluates the given package expression and invokes nix-build to build it.
  *
- * @param {object} args Arguments to this function
- * @param {string} args.filename Path to the package composition CommonJS module
- * @param {string} args.attr Name of the package to evaluate
- * @param {string} args.showTrace Indicates whether an error trace must be shown
- * @param {string} args.keepFailed Specifies whether the build result must be kept in case of an error
- * @param {string} args.outLink Specifies the path to the resulting output symlink
- * @param {boolean} args.noOutLink Disables the creation of the result symlink
+ * @param {Object} args Arguments to this function
+ * @param {String} args.filename Path to the package composition CommonJS module
+ * @param {String} args.attr Name of the package to evaluate
+ * @param {String} args.showTrace Indicates whether an error trace must be shown
+ * @param {String} args.keepFailed Specifies whether the build result must be kept in case of an error
+ * @param {String} args.outLink Specifies the path to the resulting output symlink
+ * @param {Boolean} args.noOutLink Disables the creation of the result symlink
  */
-exports.nixBuild = function(args) {
+exports.nijsBuild = function(args) {
     /* Evaluate the package */
     var pkg = evaluatePackage(args.filename, args.attr);
     
@@ -61,7 +71,7 @@ exports.nixBuild = function(args) {
     
     /* Call nix-build */
     nijs.callNixBuild({
-        nixObject : pkg,
+        nixExpression : pkg,
         params : params,
         onSuccess : function(result) {
             process.stdout.write(result + "\n");

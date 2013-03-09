@@ -128,7 +128,7 @@ if(evalOnly) {
         attr : attr
     });
 } else {
-    operations.nixBuild({
+    operations.nijsBuild({
         filename : filename,
         attr : attr,
         showTrace : showTrace,

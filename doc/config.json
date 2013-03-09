@@ -1,0 +1,6 @@
+{
+    "--title" : "NiJS",
+    "--builtin-classes" : true,
+    "--no-source" : true,
+    "--guides" : "guides.json"
+}
