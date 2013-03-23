@@ -152,6 +152,7 @@ The `callNixBuild()` function can be used to build a generated Nix expression:
     nijs.callNixBuild({
       nixObject : pkgs.hello(),
       params : [],
+      pkgsExpression : "import <nixpkgs> {}", /* Optional parameter, which defaults to this value */
       onSuccess : function(result) {
         process.stdout.write(result + "\n");
       },
