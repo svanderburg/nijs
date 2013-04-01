@@ -16,7 +16,10 @@ var pkgs = {
   },
   
   zlib : function() {
-    return require('./pkgs/zlib.js').pkg;
+    return require('./pkgs/zlib.js').pkg({
+      stdenv : pkgs.stdenv,
+      fetchurl : pkgs.fetchurl
+    });
   },
   
   file : function() {
@@ -31,11 +34,20 @@ var pkgs = {
     return require('./pkgs/perl.js').pkg;
   },
   
-  openssl : function () {
+  openssl : function() {
     return require('./pkgs/openssl.js').pkg({
       stdenv : pkgs.stdenv,
       fetchurl : pkgs.fetchurl,
       perl : pkgs.perl,
+      zlib : pkgs.zlib
+    });
+  },
+  
+  curl : function() {
+    return require('./pkgs/curl.js').pkg({
+      stdenv : pkgs.stdenv,
+      fetchurl : pkgs.fetchurl,
+      openssl : pkgs.openssl,
       zlib : pkgs.zlib
     });
   },
