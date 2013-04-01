@@ -4,8 +4,10 @@ var pkgs = {
     return require('./pkgs/stdenv.js').pkg;
   },
 
-  fetchurl : function(args) {
-    return require('./pkgs/fetchurl.js').pkg(args);
+  fetchurl : function() {
+    return require('./pkgs/fetchurl/fetchurl.js').pkg({
+      stdenv : pkgs.stdenv
+    });
   },
 
   hello : function() {

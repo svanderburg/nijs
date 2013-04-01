@@ -3,7 +3,7 @@ var nijs = require('../../lib/nijs.js');
 exports.pkg = function(args) {
   return args.stdenv().mkDerivation({
     name : "curl-7.29.0",
-    src : args.fetchurl({
+    src : args.fetchurl()({
       url : new nijs.NixURL("http://curl.haxx.se/download/curl-7.29.0.tar.bz2"),
       sha256 : "0bw3sclhjqb2zwgcp6njjpaca62rwlj2mrw2r9wic47sqsxfhy4x"
     }),

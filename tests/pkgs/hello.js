@@ -4,7 +4,7 @@ exports.pkg = function(args) {
   return args.stdenv().mkDerivation ({
     name : "hello-2.8",
     
-    src : args.fetchurl({
+    src : args.fetchurl()({
       url : new nijs.NixURL("mirror://gnu/hello/hello-2.8.tar.gz"),
       sha256 : "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"
     }),

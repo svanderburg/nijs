@@ -4,7 +4,7 @@ exports.pkg = function(args) {
   return args.stdenv().mkDerivation({
     name : "wget-1.14",
     
-    src : args.fetchurl({
+    src : args.fetchurl()({
       url : new nijs.NixURL("mirror://gnu/wget/wget-1.14.tar.gz"),
       sha256 : "0sf26vlklxx20fjnj30fx6rijpcyvdl6cjmh6m2bjnvn7a78k9pk"
     }),
