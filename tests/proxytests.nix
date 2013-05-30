@@ -46,4 +46,10 @@ rec {
     inherit (pkgs.nodePackages) underscore;
     inherit nijsInlineProxy;
   };
+  
+  indirectionWget = import ./proxytests/indirectionWget.nix {
+    inherit (pkgs) stdenv;
+    inherit pkgs;
+    inherit nijsFunProxy;
+  };
 }
