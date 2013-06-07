@@ -1,11 +1,11 @@
 {stdenv, nodejs}:
-{function, args, modules ? [], requires ? [], async ? false}:
+{name ? null, function, args, modules ? [], requires ? [], async ? false}:
 
 let
   nixToJS = import ./nixToJS.nix { inherit stdenv; };
 in
 import (stdenv.mkDerivation {
-  name = "function-proxy.nix";
+  name = "function-proxy${if name == null then "" else "-${name}"}.nix";
   buildInputs = [ nodejs ] ++ modules;
   buildCommand = ''
     (

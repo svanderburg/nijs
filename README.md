@@ -197,6 +197,7 @@ integers and writes the result to a text file in the Nix store:
       };
     
       sum = a: b: nijsFunProxy {
+        name = "sum"; # Optional, but allows one to read function names in the traces if an error occurs
         function = ''
           function sum(a, b) {
             return a + b;
@@ -241,6 +242,7 @@ library to convert a list of integers to a list of strings:
       };
       
       underscoreTestFun = numbers: nijsFunProxy {
+        name = "underscoreTestFun";
         function = ''
           function underscoreTestFun(numbers) {
             var words = [ "one", "two", "three", "four", "five" ];
@@ -295,6 +297,7 @@ after three seconds, with a standard greeting message:
       };
       
       timerTest = message: nijsFunProxy {
+        name = "timerTest";
         function = ''
           function timerTest(message) {
             setTimeout(function() {
@@ -336,6 +339,7 @@ allows a developer to write inline JavaScript code inside a Nix expression:
     stdenv.mkDerivation {
       name = "createFileWithMessage";
       buildCommand = nijsInlineProxy {
+        name = "createFileWithMessage-buildCommand"; # Optional, but allows one to read function names in the traces if an error occurs
         requires = [
           { var = "fs"; module = "fs"; }
           { var = "path"; module = "path"; }

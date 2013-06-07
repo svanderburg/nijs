@@ -2,6 +2,7 @@
 
 let
   printObjectAndReturnBye = args: nijsFunProxy {
+    name = "printObjectAndReturnBye";
     function = ''
       function printObjectAndReturnBye(args) {
         for(var attrName in args) {

@@ -3,6 +3,7 @@
 stdenv.mkDerivation {
   name = "createFileWithMessage";
   buildCommand = nijsInlineProxy {
+    name = "createFileWithMessage-buildCommand";
     requires = [
       { var = "fs"; module = "fs"; }
       { var = "path"; module = "path"; }

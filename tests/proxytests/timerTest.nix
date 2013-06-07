@@ -2,6 +2,7 @@
 
 let
   timerTest = message: nijsFunProxy {
+    name = "timerTest";
     function = ''
       function timerTest(message) {
         setTimeout(function() {

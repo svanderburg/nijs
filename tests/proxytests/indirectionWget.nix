@@ -2,6 +2,7 @@
 
 let
   indirectionWgetFun = nijsFunProxy {
+    name = "indirectionWgetFun";
     function = ''
       function indirectionWget() {
         return new nijs.NixExpression("{pkgs}: pkgs.wget");

@@ -2,6 +2,7 @@
 
 let
   sum = a: b: nijsFunProxy {
+    name = "sum";
     function = ''
       function sum(a, b) {
         return a + b;

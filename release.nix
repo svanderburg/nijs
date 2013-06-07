@@ -43,4 +43,10 @@ rec {
       echo "doc api $out" >> $out/nix-support/hydra-build-products
     '';
   };
+  
+  tests = {
+    proxytests = import ./tests/proxytests.nix {
+      inherit pkgs;
+    };
+  };
 }

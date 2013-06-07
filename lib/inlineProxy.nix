@@ -1,8 +1,8 @@
 {stdenv, writeTextFile, nodejs}:
-{code, modules ? [], requires ? [], codeIsFunction ? false}:
+{name ? null, code, modules ? [], requires ? [], codeIsFunction ? false}:
 
 import (writeTextFile {
-  name = "inline-proxy.nix";
+  name = "inline-proxy${if name == null then "" else "-${name}"}.nix";
   text = "''" + ''
     (
     source ${nodejs}/nix-support/setup-hook

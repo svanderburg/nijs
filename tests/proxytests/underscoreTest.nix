@@ -2,6 +2,7 @@
 
 let
   underscoreTestFun = numbers: nijsFunProxy {
+    name = "underscoreTest";
     function = ''
       function underscoreTestFun(numbers) {
         var words = [ "one", "two", "three", "four", "five" ];

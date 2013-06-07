@@ -2,6 +2,7 @@
 
 let
   appendTwoStrings = a: b: nijsFunProxy {
+    name = "appendTwoStrings";
     function = ''
       function appendTwoStrings(a, b) {
         return a + " " + b;
