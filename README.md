@@ -190,17 +190,17 @@ build and integration server built around Nix.
 The following Nix expression builds the hello package defined in `pkgs.js` shown
 earlier:
 
-{nixpkgs, system}:
+    {nixpkgs, system}:
 
-let
-  nijsImportPackage = import <nijs/importPackage.nix> {
-    inherit nixpkgs system;
-  };
-in
-{
-  hello = nijsImportPackage { pkgsJsFile = ./tests/pkgs/pkgs.js; attrName = "hello"; };
-  ...
-}
+    let
+      nijsImportPackage = import <nijs/importPackage.nix> {
+        inherit nixpkgs system;
+      };
+    in
+    {
+      hello = nijsImportPackage { pkgsJsFile = ./tests/pkgs/pkgs.js; attrName = "hello"; };
+      ...
+    }
 
 Calling JavaScript functions from Nix expressions
 -------------------------------------------------
