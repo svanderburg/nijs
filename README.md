@@ -29,8 +29,8 @@ To install this package, either the NPM package manager or the Nix package
 manager can be used.
 
 In order to be able to use the `nijsFunProxy` function from Nix expressions, it
-would be useful to add the following value to the `NIX_PATH` environment variable
-in your shell's profile, e.g. `~/.profile`:
+is helpful to add the following value to the `NIX_PATH` environment variable in
+your shell's profile, e.g. `~/.profile`:
 
     $ export NIX_PATH=$NIX_PATH:nijs=/path/to/nijs/lib
 
@@ -107,7 +107,6 @@ format and that they are automatically imported into the Nix store for purity.
 As they are not in the JavaScript language, we can artificially create them
 through objects that are instances of the `NixFile` and `NixURL` prototypes.
 
-
 Composing packages
 ------------------
 As with ordinary Nix expressions, we cannot use this CommonJS module to build a
@@ -181,6 +180,27 @@ debugging or testing purposes. The `--eval-only` option prints the generated
 Nix expression on the standard output:
 
     $ nijs-build pkgs.js -A hello --eval-only
+
+Building NijS packages from a Nix expression
+--------------------------------------------
+We can also call the composition CommonJS module from a Nix expression. This is
+useful to build NiJS packages from [Hydra](http://nixos.org/hydra), a continuous
+build and integration server built around Nix.
+
+The following Nix expression builds the hello package defined in `pkgs.js` shown
+earlier:
+
+{nixpkgs, system}:
+
+let
+  nijsImportPackage = import <nijs/importPackage.nix> {
+    inherit nixpkgs system;
+  };
+in
+{
+  hello = nijsImportPackage { pkgsJsFile = ./tests/pkgs/pkgs.js; attrName = "hello"; };
+  ...
+}
 
 Calling JavaScript functions from Nix expressions
 -------------------------------------------------
