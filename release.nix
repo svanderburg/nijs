@@ -7,34 +7,9 @@ let
   
   version = builtins.readFile ./version;
   
-  importNijsPackage = {pkgsJsFile, attrName}:
-    let nijsInlineProxy = import ./lib/inlineProxy.nix {
-      inherit (pkgs) stdenv writeTextFile nodejs;
-    };
-    in
-    import (pkgs.stdenv.mkDerivation {
-      name = "importnijs-${attrName}.nix";
-        
-      buildCommand = nijsInlineProxy {
-        name = "${attrName}-buildCommand";
-        requires = [
-          { var = "fs"; module = "fs"; }
-          { var = "pkgsJsFile"; module = pkgsJsFile; }
-          { var = "nijs"; module = "${./.}/lib/nijs.js"; }
-        ];
-        code = ''
-          var expr = pkgsJsFile.pkgs['${attrName}']();
-          expr = new nijs.NixExpression('let\n' +
-              '  pkgs = import ${nixpkgs} { system = "${system}"; };\n' +
-              '  nijsFunProxy = import ${./.}/lib/funProxy.nix { inherit (pkgs) stdenv nodejs; };\n' +
-              '  nijsInlineProxy = import ${./.}/lib/inlineProxy.nix { inherit (pkgs) stdenv writeTextFile nodejs; };\n' +
-              'in\n' +
-              expr.value);
-            
-          fs.writeFileSync(process.env['out'], nijs.jsToNix(expr));
-        '';
-      };
-    });
+  nijsImportPackage = import ./lib/importPackage.nix {
+    inherit nixpkgs system;
+  };
 in
 rec {
   tarball = pkgs.stdenv.mkDerivation {
@@ -83,17 +58,17 @@ rec {
         pkgsJsFile = "${./.}/tests/pkgs.js";
       in
       {
-        hello = importNijsPackage { inherit pkgsJsFile; attrName = "hello"; };
-        zlib = importNijsPackage { inherit pkgsJsFile; attrName = "zlib"; };
-        file = importNijsPackage { inherit pkgsJsFile; attrName = "file"; };
-        perl = importNijsPackage { inherit pkgsJsFile; attrName = "perl"; };
-        openssl = importNijsPackage { inherit pkgsJsFile; attrName = "openssl"; };
-        curl = importNijsPackage { inherit pkgsJsFile; attrName = "curl"; };
-        wget = importNijsPackage { inherit pkgsJsFile; attrName = "wget"; };
-        sumTest = importNijsPackage { inherit pkgsJsFile; attrName = "sumTest"; };
-        stringWriteTest = importNijsPackage { inherit pkgsJsFile; attrName = "stringWriteTest"; };
-        appendFilesTest = importNijsPackage { inherit pkgsJsFile; attrName = "appendFilesTest"; };
-        createFileWithMessageTest = importNijsPackage { inherit pkgsJsFile; attrName = "createFileWithMessageTest"; };
+        hello = nijsImportPackage { inherit pkgsJsFile; attrName = "hello"; };
+        zlib = nijsImportPackage { inherit pkgsJsFile; attrName = "zlib"; };
+        file = nijsImportPackage { inherit pkgsJsFile; attrName = "file"; };
+        perl = nijsImportPackage { inherit pkgsJsFile; attrName = "perl"; };
+        openssl = nijsImportPackage { inherit pkgsJsFile; attrName = "openssl"; };
+        curl = nijsImportPackage { inherit pkgsJsFile; attrName = "curl"; };
+        wget = nijsImportPackage { inherit pkgsJsFile; attrName = "wget"; };
+        sumTest = nijsImportPackage { inherit pkgsJsFile; attrName = "sumTest"; };
+        stringWriteTest = nijsImportPackage { inherit pkgsJsFile; attrName = "stringWriteTest"; };
+        appendFilesTest = nijsImportPackage { inherit pkgsJsFile; attrName = "appendFilesTest"; };
+        createFileWithMessageTest = nijsImportPackage { inherit pkgsJsFile; attrName = "createFileWithMessageTest"; };
       };
     };
 }
