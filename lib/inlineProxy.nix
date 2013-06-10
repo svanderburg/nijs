@@ -1,9 +1,10 @@
 {stdenv, writeTextFile, nodejs}:
 {name ? null, code, modules ? [], requires ? [], codeIsFunction ? false}:
 
-import (writeTextFile {
+writeTextFile {
   name = "inline-proxy${if name == null then "" else "-${name}"}.nix";
-  text = "''" + ''
+  executable = true;
+  text = ''
     (
     source ${nodejs}/nix-support/setup-hook
     ${stdenv.lib.concatMapStrings (module: "addNodePath ${module}\n") modules}
@@ -18,5 +19,5 @@ import (writeTextFile {
     '' else code}
     __EOF__
     ) | ${nodejs}/bin/node)
-  '' + "''";
-})
+  '';
+}
