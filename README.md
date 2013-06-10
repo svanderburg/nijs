@@ -80,7 +80,7 @@ can be written as a CommonJS module, that may look as follows:
       return args.stdenv().mkDerivation ({
         name : "hello-2.8",
     
-        src : args.fetchurl({
+        src : args.fetchurl()({
           url : new nijs.NixURL("mirror://gnu/hello/hello-2.8.tar.gz"),
           sha256 : "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"
         }),
@@ -120,8 +120,10 @@ the `tests/` folder. The structure of this file is as follows:
         return require('./pkgs/stdenv.js').pkg;
       },
 
-      fetchurl : function(args) {
-        return require('./pkgs/fetchurl.js').pkg(args);
+      fetchurl : function() {
+        return require('./pkgs/fetchurl/fetchurl.js').pkg({
+          stdenv : pkgs.stdenv
+        });
       },
 
       hello : function() {
