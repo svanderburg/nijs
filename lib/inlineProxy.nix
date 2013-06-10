@@ -6,6 +6,7 @@ writeTextFile {
   executable = true;
   text = ''
     (
+    source ${stdenv}/setup
     source ${nodejs}/nix-support/setup-hook
     ${stdenv.lib.concatMapStrings (module: "addNodePath ${module}\n") modules}
     
