@@ -2,7 +2,7 @@
 {name ? null, code, modules ? [], requires ? [], codeIsFunction ? false}:
 
 writeTextFile {
-  name = "inline-proxy${if name == null then "" else "-${name}"}.nix";
+  name = "inline-proxy${if name == null then "" else "-${name}"}";
   executable = true;
   text = ''
     (
