@@ -8,7 +8,7 @@ writeTextFile {
     (
     source ${stdenv}/setup
     source ${nodejs}/nix-support/setup-hook
-    export NODE_PATH=$NODE_PATH
+    export NODE_PATH=${NODE_PATH}
     ${stdenv.lib.concatMapStrings (module: "addNodePath ${module}\n") modules}
     
     (
