@@ -1,5 +1,5 @@
 {stdenv, writeTextFile, nodejs}:
-{name ? null, code, modules ? [], requires ? [], codeIsFunction ? false}:
+{name ? null, code, modules ? [], requires ? [], NODE_PATH ? "", codeIsFunction ? false}:
 
 writeTextFile {
   name = "inline-proxy${if name == null then "" else "-${name}"}";
@@ -8,6 +8,7 @@ writeTextFile {
     (
     source ${stdenv}/setup
     source ${nodejs}/nix-support/setup-hook
+    export NODE_PATH=$NODE_PATH
     ${stdenv.lib.concatMapStrings (module: "addNodePath ${module}\n") modules}
     
     (
