@@ -183,7 +183,7 @@ Nix expression on the standard output:
 
     $ nijs-build pkgs.js -A hello --eval-only
 
-Building NijS packages from a Nix expression
+Building NiJS packages from a Nix expression
 --------------------------------------------
 We can also call the composition CommonJS module from a Nix expression. This is
 useful to build NiJS packages from [Hydra](http://nixos.org/hydra), a continuous
