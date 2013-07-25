@@ -30,6 +30,11 @@ rec {
     inherit nijsFunProxy;
   };
   
+  returnAttrSetStrings = import ./proxytests/returnAttrSetStrings.nix {
+    inherit (pkgs) stdenv;
+    inherit nijsFunProxy;
+  };
+  
   underscoreTest = import ./proxytests/underscoreTest.nix {
     inherit (pkgs) stdenv;
     inherit (pkgs.nodePackages) underscore;
