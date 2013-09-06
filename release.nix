@@ -42,7 +42,6 @@ let
         src = determineTarballPath tarball;
   
         deps = [
-          pkgs.nodePackages.nijs
           pkgs.nodePackages.optparse
         ];
       };
