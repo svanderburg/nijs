@@ -94,6 +94,18 @@ var pkgs = {
     return require('./pkgs/sayHello.js').pkg({
       stdenv : pkgs.stdenv
     });
+  },
+  
+  addressPerson : function() {
+    return require('./pkgs/addressPerson.js').pkg({
+      stdenv : pkgs.stdenv
+    });
+  },
+  
+  addressPersons: function() {
+    return require('./pkgs/addressPersons.js').pkg({
+      stdenv : pkgs.stdenv
+    });
   }
 };
 
