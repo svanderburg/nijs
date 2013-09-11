@@ -13,12 +13,13 @@ var nijs = require('../lib/nijs.js');
  *
  * @param {String} filename Path to the package composition CommonJS module
  * @param {String} attr Name of the package to evaluate
- * @return {NixExpression} An object instance of the NixExpression prototype containing a value with the generated Nix expression
+ * @return {String} A string containing the generated Nix expression
  */
 function evaluatePackage(filename, attr) {
     var pkgs = require(path.resolve(filename)).pkgs;
     var pkg = pkgs[attr]();
-    return pkg;
+    var expr = nijs.jsToNix(pkg);
+    return expr;
 }
 
 /**
@@ -31,8 +32,8 @@ function evaluatePackage(filename, attr) {
  * @param {String} args.attr Name of the package to evaluate
  */
 exports.evaluateModule = function(args) {
-    var pkg = evaluatePackage(args.filename, args.attr);
-    process.stdout.write(pkg.value + "\n");
+    var expr = evaluatePackage(args.filename, args.attr);
+    process.stdout.write(expr + "\n");
 };
 
 /**
@@ -50,7 +51,7 @@ exports.evaluateModule = function(args) {
  */
 exports.nijsBuild = function(args) {
     /* Evaluate the package */
-    var pkg = evaluatePackage(args.filename, args.attr);
+    var expr = evaluatePackage(args.filename, args.attr);
     
     /* Compose parameters to nix-build */
     var params = [];
@@ -71,7 +72,7 @@ exports.nijsBuild = function(args) {
     
     /* Call nix-build */
     nijs.callNixBuild({
-        nixExpression : pkg,
+        nixExpression : expr,
         params : params,
         onSuccess : function(result) {
             process.stdout.write(result + "\n");

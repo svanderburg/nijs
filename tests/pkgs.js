@@ -106,6 +106,12 @@ var pkgs = {
     return require('./pkgs/addressPersons.js').pkg({
       stdenv : pkgs.stdenv
     });
+  },
+  
+  numbers: function() {
+    return require('./pkgs/numbers.js').pkg({
+      stdenv : pkgs.stdenv
+    });
   }
 };
 
