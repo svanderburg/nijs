@@ -68,7 +68,7 @@ let
     
       pkgs = 
         let
-          pkgsJsFile = "${./.}/tests/pkgs.js";
+          pkgsJsFile = "${toString ./.}/tests/pkgs.js";
         in
         {
           hello = nijsImportPackage { inherit pkgsJsFile; attrName = "hello"; };
@@ -82,6 +82,10 @@ let
           stringWriteTest = nijsImportPackage { inherit pkgsJsFile; attrName = "stringWriteTest"; };
           appendFilesTest = nijsImportPackage { inherit pkgsJsFile; attrName = "appendFilesTest"; };
           createFileWithMessageTest = nijsImportPackage { inherit pkgsJsFile; attrName = "createFileWithMessageTest"; };
+          sayHello = nijsImportPackage { inherit pkgsJsFile; attrName = "sayHello"; };
+          addressPerson = nijsImportPackage { inherit pkgsJsFile; attrName = "addressPerson"; };
+          addressPersons = nijsImportPackage { inherit pkgsJsFile; attrName = "addressPersons"; };
+          numbers = nijsImportPackage { inherit pkgsJsFile; attrName = "numbers"; };
         };
       };
   };

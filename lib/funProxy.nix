@@ -12,7 +12,7 @@ import (stdenv.mkDerivation {
     (
     cat <<EOF
     var fs = require('fs');
-    var nijs = require('${./.}/nijs.js');
+    var nijs = require('${toString ./.}/nijs.js');
     
     /* Import all the CommonJS modules that we like to use in this function */
     ${stdenv.lib.concatMapStrings (require: "var ${require.var} = require('${require.module}');\n") requires}

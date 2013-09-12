@@ -9,24 +9,27 @@ let
   };
 in
 import (pkgs.stdenv.mkDerivation {
-  name = "importpackage-${attrName}.nix";
+  name = "importPackage-${attrName}.nix";
     
   buildCommand = nijsInlineProxy {
-    name = "${attrName}-buildCommand";
+    name = "importPackage-${attrName}-buildCommand";
     requires = [
       { var = "fs"; module = "fs"; }
-      { var = "nijs"; module = "${./.}/nijs.js"; }
+      { var = "nijs"; module = "${toString ./.}/nijs.js"; }
       { var = "pkgsJsFile"; module = pkgsJsFile; }
     ];
     code = ''
       var expr = pkgsJsFile.pkgs['${attrName}']();
-      expr = new nijs.NixExpression('let\n' +
-        '  pkgs = import ${nixpkgs} { system = "${system}"; };\n' +
-        '  nijsFunProxy = import ${./.}/funProxy.nix { inherit (pkgs) stdenv nodejs; };\n' +
-        '  nijsInlineProxy = import ${./.}/inlineProxy.nix { inherit (pkgs) stdenv writeTextFile nodejs; };\n' +
-        'in\n' +
-        expr.value);
-        
+      
+      expr = new nijs.NixLet({
+        value : {
+          pkgs : new nijs.NixExpression('import ${nixpkgs} { system = "${system}"; }'),
+          nijsFunProxy : new nijs.NixExpression('import ${toString ./.}/funProxy.nix { inherit (pkgs) stdenv nodejs; }'),
+          nijsInlineProxy : new nijs.NixExpression('import ${toString ./.}/inlineProxy.nix { inherit (pkgs) stdenv writeTextFile nodejs; }')
+        },
+        body : expr
+      });
+      
       fs.writeFileSync(process.env['out'], nijs.jsToNix(expr));
     '';
   };
