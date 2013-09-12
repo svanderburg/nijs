@@ -107,6 +107,10 @@ format and that they are automatically imported into the Nix store for purity.
 As they are not in the JavaScript language, we can artificially create them
 through objects that are instances of the `NixFile` and `NixURL` prototypes.
 
+Moreover, there are more prototypes for some other Nix expression language
+constructs that have no JavaScript equivalent. Check the API documentation for
+more information.
+
 Composing packages
 ------------------
 As with ordinary Nix expressions, we cannot use this CommonJS module to build a
