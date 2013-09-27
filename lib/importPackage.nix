@@ -29,7 +29,7 @@ import (pkgs.stdenv.mkDerivation {
         },
         body : expr
       });
-      
+
       fs.writeFileSync(process.env['out'], nijs.jsToNix(expr));
     '';
   };

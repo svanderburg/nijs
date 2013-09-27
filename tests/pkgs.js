@@ -112,6 +112,12 @@ var pkgs = {
     return require('./pkgs/numbers.js').pkg({
       stdenv : pkgs.stdenv
     });
+  },
+  
+  sayHello2: function() {
+    return require('./pkgs/sayHello2.js').pkg({
+      stdenv : pkgs.stdenv
+    });
   }
 };
 

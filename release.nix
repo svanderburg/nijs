@@ -39,8 +39,9 @@ let
 
       pkgs.nodePackages.buildNodePackage {
         name = "nijs-${version}";
-        src = determineTarballPath tarball;
+        src = [ (determineTarballPath tarball) ];
   
+        passthru.names = [ "nijs" ];
         deps = [
           pkgs.nodePackages.optparse
         ];
@@ -86,6 +87,7 @@ let
           addressPerson = nijsImportPackage { inherit pkgsJsFile; attrName = "addressPerson"; };
           addressPersons = nijsImportPackage { inherit pkgsJsFile; attrName = "addressPersons"; };
           numbers = nijsImportPackage { inherit pkgsJsFile; attrName = "numbers"; };
+          sayHello2 = nijsImportPackage { inherit pkgsJsFile; attrName = "sayHello2"; };
         };
       };
   };
