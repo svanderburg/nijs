@@ -1,14 +1,16 @@
 { nixpkgs ? <nixpkgs>
-, system ? builtins.currentSystem
+, systems ? [ "i686-linux" "x86_64-linux" ]
+, officialRelease ? false
 }:
 
 let
-  pkgs = import nixpkgs { inherit system; };
+  pkgs = import nixpkgs {};
   
   version = builtins.readFile ./version;
   
   nijsImportPackage = import ./lib/importPackage.nix {
-    inherit nixpkgs system;
+    inherit nixpkgs;
+    system = builtins.currentSystem;
   };
   
   determineTarballPath = tarball: {
@@ -16,27 +18,27 @@ let
     outPath = "${tarball}/tarballs/nijs-${version}.tgz";
   };
 
-  jobs = {
-    tarball = {officialRelease ? false}:
+  jobs = rec {
+    tarball = pkgs.releaseTools.sourceTarball {
+      name = "nijs-tarball";
+      inherit version;
+      src = ./.;
+      inherit officialRelease;
+      distPhase = ''
+        mkdir -p package
+        cd package
+        cp -av $src/* .
+        cd ..
+        tar cfvz nijs-${version}.tgz package
+        mkdir -pv $out/tarballs
+        cp *.tgz $out/tarballs
+      '';
+    };
   
-      pkgs.releaseTools.sourceTarball {
-        name = "nijs-tarball";
-        inherit version;
-        src = ./.;
-        inherit officialRelease;
-        distPhase = ''
-          mkdir -p package
-          cd package
-          cp -av $src/* .
-          cd ..
-          tar cfvz nijs-${version}.tgz package
-          mkdir -pv $out/tarballs
-          cp *.tgz $out/tarballs
-        '';
-      };
-  
-    build = {tarball ? jobs.tarball {} }:
-
+    build = pkgs.lib.genAttrs systems (system:
+      let
+        pkgs = import nixpkgs { inherit system; };
+      in
       pkgs.nodePackages.buildNodePackage {
         name = "nijs-${version}";
         src = [ (determineTarballPath tarball) ];
@@ -45,22 +47,20 @@ let
         deps = [
           pkgs.nodePackages.optparse
         ];
-      };
+      });
   
-    doc = {tarball ? jobs.tarball {} }:
+    doc = pkgs.stdenv.mkDerivation {
+      name = "nijs-docs-${version}";
+      src = determineTarballPath tarball;
     
-      pkgs.stdenv.mkDerivation {
-        name = "nijs-docs-${version}";
-        src = determineTarballPath tarball;
-    
-        buildInputs = [ pkgs.rubyLibs.jsduck ];
-        buildPhase = "make duck";
-        installPhase = ''
-          mkdir -p $out/nix-support
-          cp -R build/* $out
-          echo "doc api $out" >> $out/nix-support/hydra-build-products
-        '';
-      };
+      buildInputs = [ pkgs.rubyLibs.jsduck ];
+      buildPhase = "make duck";
+      installPhase = ''
+        mkdir -p $out/nix-support
+        cp -R build/* $out
+        echo "doc api $out" >> $out/nix-support/hydra-build-products
+      '';
+    };
   
     tests = {
       proxytests = import ./tests/proxytests.nix {
@@ -69,7 +69,7 @@ let
     
       pkgs = 
         let
-          pkgsJsFile = "${toString ./.}/tests/pkgs.js";
+          pkgsJsFile = "${./.}/tests/pkgs.js";
         in
         {
           hello = nijsImportPackage { inherit pkgsJsFile; attrName = "hello"; };
