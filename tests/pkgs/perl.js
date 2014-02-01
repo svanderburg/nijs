@@ -1,3 +1,3 @@
-var nijs = require('../../lib/nijs.js');
+var nijs = require('nijs');
 
 exports.pkg = new nijs.NixExpression("pkgs.perl");

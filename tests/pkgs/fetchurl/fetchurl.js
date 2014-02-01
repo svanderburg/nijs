@@ -1,6 +1,6 @@
 var path = require('path');
 var fs = require('fs');
-var nijs = require('../../../lib/nijs.js');
+var nijs = require('nijs');
 
 exports.pkg = function(args) {
   return function(funArgs) {

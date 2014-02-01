@@ -1,4 +1,4 @@
-var nijs = require('../../lib/nijs.js');
+var nijs = require('nijs');
 
 exports.pkg = function(args) {
   return args.stdenv().mkDerivation ({
