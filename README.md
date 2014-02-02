@@ -28,11 +28,14 @@ Installation
 To install this package, either the NPM package manager or the Nix package
 manager can be used.
 
-In order to be able to use the `nijsFunProxy` function from Nix expressions, it
-is helpful to add the following value to the `NIX_PATH` environment variable in
-your shell's profile, e.g. `~/.profile`:
+To install this package through the Nix package manager, obtain a copy of [Nixpkgs](http://nixos.org/nixpkgs)
+and run:
 
-    $ export NIX_PATH=$NIX_PATH:nijs=/path/to/nijs/lib
+    $ nix-env -f '<nixpkgs>' -iA nodePackages.nijs
+
+Alternatively, this package can also be installed through NPM by running:
+
+    $ npm install -g nijs
 
 Usage
 =====
@@ -196,7 +199,7 @@ build and integration server built around Nix.
 The following Nix expression builds the hello package defined in `pkgs.js` shown
 earlier:
 
-    {nixpkgs, system}:
+    {nixpkgs, system, nijs}:
 
     let
       nijsImportPackage = import <nijs/importPackage.nix> {
@@ -215,11 +218,11 @@ This can be done by using the `nijsFunProxy` Nix function. The following code
 fragment shows a Nix expression using the `sum()` JavaScript function to add two
 integers and writes the result to a text file in the Nix store:
 
-    {stdenv, nodejs}:
+    {stdenv, nodejs, nijs}:
 
     let
-      nijsFunProxy = import <nijs/funProxy.nix> {
-        inherit stdenv nodejs;
+      nijsFunProxy = import "${nijs}/lib/node_modules/nijs/lib/funProxy.nix" {
+        inherit stdenv nodejs nijs;
       };
     
       sum = a: b: nijsFunProxy {
@@ -260,11 +263,11 @@ we cannot access anything outside the function's scope. Fortunately, the
 them available to that function. The following code fragment uses the [Underscore](http://underscorejs.org)
 library to convert a list of integers to a list of strings:
 
-    {stdenv, nodejs, underscore}:
+    {stdenv, nodejs, nijs, underscore}:
 
     let
-      nijsFunProxy = import <nijs/funProxy.nix> {
-        inherit stdenv nodejs;
+      nijsFunProxy = import "${nijs}/lib/node_modules/nijs/lib/funProxy.nix" {
+        inherit stdenv nodejs nijs;
       };
       
       underscoreTestFun = numbers: nijsFunProxy {
@@ -315,11 +318,11 @@ case of success or the `nijsCallbacks.onFailure()` function in case of a failure
 The following example uses a timer that calls the success callback function
 after three seconds, with a standard greeting message:
 
-    {stdenv, nodejs}:
+    {stdenv, nodejs, nijs}:
     
     let
-      nijsFunProxy = import <nijs/funProxy.nix> {
-        inherit stdenv nodejs;
+      nijsFunProxy = import "${nijs}/lib/node_modules/nijs/lib/funProxy.nix" {
+        inherit stdenv nodejs nijs;
       };
       
       timerTest = message: nijsFunProxy {
@@ -355,11 +358,11 @@ It may also be desired to implement custom build procedure steps as embedded
 JavaScript code, instead of embedded shell code. The `nijsInlineProxy` function
 allows a developer to write inline JavaScript code inside a Nix expression:
 
-    {stdenv}:
+    {stdenv, writeTextFile, nodejs, nijs}:
 
     let
-      nijsInlineProxy = import <nijs/inlineProxy.nix> {
-        inherit stdenv writeTextFile nodejs;
+      nijsInlineProxy = import "${nijs}/lib/node_modules/nijs/lib/inlineProxy.nix" {
+        inherit stdenv writeTextFile nodejs nijs;
       };
     in
     stdenv.mkDerivation {

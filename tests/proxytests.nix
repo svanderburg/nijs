@@ -1,12 +1,16 @@
-{pkgs ? import <nixpkgs> {} }:
+{ pkgs ? import <nixpkgs> {}
+, nijs ? builtins.getAttr (builtins.currentSystem) ((import ../release.nix {}).build)
+}:
 
 let
   nijsFunProxy = import ../lib/funProxy.nix {
     inherit (pkgs) stdenv nodejs;
+    inherit nijs;
   };
   
   nijsInlineProxy = import ../lib/inlineProxy.nix {
     inherit (pkgs) stdenv writeTextFile nodejs;
+    inherit nijs;
   };
 in
 rec {

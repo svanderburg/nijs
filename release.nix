@@ -60,6 +60,7 @@ let
     tests = {
       proxytests = import ./tests/proxytests.nix {
         inherit pkgs;
+        nijs = builtins.getAttr (builtins.currentSystem) (jobs.build);
       };
     
       pkgs = 

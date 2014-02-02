@@ -24,8 +24,8 @@ import (pkgs.stdenv.mkDerivation {
       expr = new nijs.NixLet({
         value : {
           pkgs : new nijs.NixExpression('import ${nixpkgs} { system = "${system}"; }'),
-          nijsFunProxy : new nijs.NixExpression('import ${./.}/funProxy.nix { inherit (pkgs) stdenv nodejs; }'),
-          nijsInlineProxy : new nijs.NixExpression('import ${./.}/inlineProxy.nix { inherit (pkgs) stdenv writeTextFile nodejs; }')
+          nijsFunProxy : new nijs.NixExpression('import ${nijs}/lib/node_modules/nijs/lib/funProxy.nix { inherit (pkgs) stdenv nodejs; inherit nijs; }'),
+          nijsInlineProxy : new nijs.NixExpression('import ${nijs}/lib/node_modules/nijs/lib/inlineProxy.nix { inherit (pkgs) stdenv writeTextFile nodejs; inherit nijs; }')
         },
         body : expr
       });
