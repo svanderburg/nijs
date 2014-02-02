@@ -8,11 +8,6 @@ let
   
   version = builtins.readFile ./version;
   
-  nijsImportPackage = import ./lib/importPackage.nix {
-    inherit nixpkgs;
-    system = builtins.currentSystem;
-  };
-  
   determineTarballPath = tarball: {
     name = "nijs-tarball";
     outPath = "${tarball}/tarballs/nijs-${version}.tgz";
@@ -70,6 +65,12 @@ let
       pkgs = 
         let
           pkgsJsFile = "${./.}/tests/pkgs.js";
+          
+          nijsImportPackage = import ./lib/importPackage.nix {
+            inherit nixpkgs;
+            system = builtins.currentSystem;
+            nijs = builtins.getAttr (builtins.currentSystem) (jobs.build);
+          };
         in
         {
           hello = nijsImportPackage { inherit pkgsJsFile; attrName = "hello"; };

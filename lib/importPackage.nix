@@ -1,4 +1,4 @@
-{nixpkgs, system}:
+{nixpkgs, system, nijs}:
 {pkgsJsFile, attrName}:
 
 let
@@ -6,6 +6,7 @@ let
 
   nijsInlineProxy = import ./inlineProxy.nix {
     inherit (pkgs) stdenv writeTextFile nodejs;
+    inherit nijs;
   };
 in
 import (pkgs.stdenv.mkDerivation {
@@ -15,7 +16,6 @@ import (pkgs.stdenv.mkDerivation {
     name = "importPackage-${attrName}-buildCommand";
     requires = [
       { var = "fs"; module = "fs"; }
-      { var = "nijs"; module = "${./.}/nijs.js"; }
       { var = "pkgsJsFile"; module = pkgsJsFile; }
     ];
     code = ''
