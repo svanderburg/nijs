@@ -201,8 +201,8 @@ earlier:
     {nixpkgs, system, nijs}:
 
     let
-      nijsImportPackage = import <nijs/importPackage.nix> {
-        inherit nixpkgs system;
+      nijsImportPackage = import "${nijs}/lib/node_modules/nijs/lib/importPackage.nix" {
+        inherit nixpkgs system nijs;
       };
     in
     {
