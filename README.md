@@ -25,8 +25,7 @@ Prerequisites
 
 Installation
 ============
-To install this package, either the NPM package manager or the Nix package
-manager can be used.
+There are two ways this package can installed.
 
 To install this package through the Nix package manager, obtain a copy of [Nixpkgs](http://nixos.org/nixpkgs)
 and run:
