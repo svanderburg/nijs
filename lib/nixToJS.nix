@@ -14,6 +14,6 @@ let
     else if exprType == "set" then "{ ${stdenv.lib.concatMapStrings (elem: "\"${elem}\" : ${nixToJS (builtins.getAttr elem expr)},\n") (builtins.attrNames expr)} }"
     else if exprType == "list" then "[ ${stdenv.lib.concatMapStrings (elem: nixToJS elem + ",\n") expr} ]"
     else if exprType == "lambda" then "Cannot convert lambda to JavaScript"
-    else throw "Cannot convert this expression to JavaScript";
+    else "\"${expr}\""; # It's most likely a Nix store path that gets evaluated if none of the other types match. Simply convert this to a string
 in
 nixToJS expr
