@@ -10,15 +10,16 @@ let
     
     function = ''
       function passMessageFile(messageFile) {
-        return messageFile;
+        var message = fs.readFileSync(messageFile.value);
+        return message.toString();
       }
     '';
     args = [ messageFile ];
   };
 in
 stdenv.mkDerivation {
-  name = "indirectCopy";
+  name = "indirectCat";
   buildCommand = ''
-    cat ${passMessageFile ./message.txt} > $out
+    echo ${passMessageFile ./message.txt} > $out
   '';
 }
