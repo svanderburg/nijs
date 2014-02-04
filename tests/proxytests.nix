@@ -66,4 +66,9 @@ rec {
     inherit pkgs;
     inherit nijsFunProxy;
   };
+  
+  indirectCat = import ./proxytests/indirectCat.nix {
+    inherit (pkgs) stdenv;
+    inherit nijsFunProxy;
+  };
 }
