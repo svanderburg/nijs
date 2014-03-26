@@ -5,7 +5,7 @@ var pkgs = {
   },
 
   fetchurl : function() {
-    return require('./pkgs/fetchurl/fetchurl.js').pkg({
+    return require('./pkgs/fetchurl').pkg({
       stdenv : pkgs.stdenv
     });
   },
@@ -102,21 +102,79 @@ var pkgs = {
     });
   },
   
-  addressPersons: function() {
+  addressPersons : function() {
     return require('./pkgs/addressPersons.js').pkg({
       stdenv : pkgs.stdenv
     });
   },
   
-  numbers: function() {
+  numbers : function() {
     return require('./pkgs/numbers.js').pkg({
       stdenv : pkgs.stdenv
     });
   },
   
-  sayHello2: function() {
+  sayHello2 : function() {
     return require('./pkgs/sayHello2.js').pkg({
       stdenv : pkgs.stdenv
+    });
+  },
+  
+  bzip2 : function() {
+    return require('./pkgs/bzip2.js').pkg({
+      stdenv : pkgs.stdenv,
+      fetchurl : pkgs.fetchurl
+    });
+  },
+  
+  utillinux : function() {
+    return require('./pkgs/utillinux.js').pkg({
+      stdenv : pkgs.stdenv,
+      fetchurl : pkgs.fetchurl,
+      zlib : pkgs.zlib
+    });
+  },
+  
+  python : function() {
+    return require('./pkgs/python').pkg({
+      stdenv : pkgs.stdenv,
+      fetchurl : pkgs.fetchurl,
+      zlib : pkgs.zlib,
+      bzip2 : pkgs.bzip2,
+      openssl : pkgs.openssl,
+    });
+  },
+  
+  nodejs : function() {
+    return require('./pkgs/nodejs').pkg({
+      stdenv : pkgs.stdenv,
+      fetchurl : pkgs.fetchurl,
+      python : pkgs.python,
+      zlib : pkgs.zlib,
+      openssl : pkgs.openssl,
+      utillinux : pkgs.utillinux
+    });
+  },
+  
+  buildNodePackage : function() {
+    return require('./pkgs/nodejs/buildNodePackage.js').pkg({
+      stdenv : pkgs.stdenv,
+      nodejs : pkgs.nodejs
+    });
+  },
+  
+  optparse : function() {
+    return require('./pkgs/optparse.js').pkg({
+      buildNodePackage : pkgs.buildNodePackage,
+      fetchurl : pkgs.fetchurl
+    });
+  },
+  
+  nijs : function() {
+    return require('./pkgs/nijs.js').pkg({
+      buildNodePackage : pkgs.buildNodePackage,
+      fetchurl : pkgs.fetchurl,
+      optparse : pkgs.optparse
     });
   }
 };
