@@ -75,10 +75,12 @@ exports.nijsBuild = function(args) {
         nixExpression : expr,
         params : params,
         callback : function(err, result) {
-            if(err)
+            if(err) {
                 process.stdout.write(result + "\n");
-            else
-                process.exit(code);
+            } else {
+                process.stderr.write(err + "\n");
+                process.exit(1);
+            }
         }
     });
 };
