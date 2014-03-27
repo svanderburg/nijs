@@ -8,6 +8,8 @@ exports.pkg = function(args) {
       sha256 : "1ahx9cf2irp8injh826sk417wd528awi4l1mh7vxg7k8yak4wppg"
     }),
     
+    preConfigure : 'sed -i -e "s|#!/usr/bin/env python|#! $(type -p python)|" configure',
+    
     configureFlags : [ "--shared-openssl", "--shared-zlib" ],
     
     buildInputs : [
