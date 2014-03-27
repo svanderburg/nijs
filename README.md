@@ -160,20 +160,22 @@ The `callNixBuild()` function can be used to build a generated Nix expression:
       nixExpression : pkgs.hello(),
       params : [],
       pkgsExpression : "import <nixpkgs> {}", /* Optional parameter, which defaults to this value */
-      onSuccess : function(result) {
-        process.stdout.write(result + "\n");
-      },
-      onFailure : function(code) {
-        process.exit(code);
+      callback : function(err, result) {
+        if(err) {
+          process.stderr.write(err);
+          process.exit(1);
+        } else {
+          process.stdout.write(result + "\n");
+        }
       }
     });
 
 In the code fragment above we call the `callNixBuild` function, in which we
 evaluate the hello package that gets built asynchronously by Nix. The
-`onSuccess()` callback function is called when the build succeeds with the
-resulting Nix store path as function parameter. The store path is printed on the
-standard output. If the build fails, the `onFailure()` callback function is
-called with the non-zero exit status code as parameter.
+`callback` function parameter is called when the build has been done, providing
+either an `err` parameter that is not null if some error occured or `result`
+referring to the resulting Nix store path. Finally, the store path is printed on
+the standard output.
 
 Building packages through a command-line utility
 ------------------------------------------------
@@ -310,9 +312,9 @@ Calling asynchronous JavaScript functions from Nix expressions
 In Node.js, most of the standard utility functions are *asynchronous*, which
 will return immediately, and invoke a callback function when the task is done.
 To allow these functions to be used inside a Nix expression, we must set the
-`async` parameter to true in the `nijsFunProxy`. Furthermore, instead of
-returning an object, we must call the `nijsCallbacks.onSuccess()` function in
-case of success or the `nijsCallbacks.onFailure()` function in case of a failure.
+`async` parameter to `true` in the `nijsFunProxy`. Furthermore, instead of
+returning an object or throwing an exception, we must call the
+`nijsCallbacks.callback(err, result)` function.
 
 The following example uses a timer that calls the success callback function
 after three seconds, with a standard greeting message:
@@ -329,7 +331,7 @@ after three seconds, with a standard greeting message:
         function = ''
           function timerTest(message) {
             setTimeout(function() {
-              nijsCallbacks.onSuccess(message);
+              nijsCallbacks.callback(null, message);
             }, 3000);
           }
         '';

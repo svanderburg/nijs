@@ -74,11 +74,11 @@ exports.nijsBuild = function(args) {
     nijs.callNixBuild({
         nixExpression : expr,
         params : params,
-        onSuccess : function(result) {
-            process.stdout.write(result + "\n");
-        },
-        onFailure : function(code) {
-            process.exit(code);
+        callback : function(err, result) {
+            if(err)
+                process.stdout.write(result + "\n");
+            else
+                process.exit(code);
         }
     });
 };

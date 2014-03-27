@@ -6,7 +6,7 @@ let
     function = ''
       function timerTest(message) {
         setTimeout(function() {
-          nijsCallbacks.onSuccess(message);
+          nijsCallbacks.callback(null, message);
         }, 3000);
       }
     '';

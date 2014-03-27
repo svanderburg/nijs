@@ -28,12 +28,13 @@ import (stdenv.mkDerivation {
     /* Define callback interfaces for asynchronous functions */
     
     var nijsCallbacks = {
-        onSuccess : function(result) {
-            fs.writeFileSync("$out", nijs.jsToNix(result));
-        },
-    
-        onFailure : function(status) {
-            process.exit(status);
+        callback : function(err, result) {
+            if(err) {
+                process.stderr.write(err);
+                process.exit(1);
+            } else {
+                fs.writeFileSync("$out", nijs.jsToNix(result));
+            }
         }
     };
     
@@ -42,7 +43,7 @@ import (stdenv.mkDerivation {
     
     ${stdenv.lib.optionalString (!async) ''
       /* Return the evaluation result */
-      nijsCallbacks.onSuccess(result);
+      nijsCallbacks.callback(null, result);
     ''}
     EOF
     ) | node
