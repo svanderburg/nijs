@@ -10,7 +10,8 @@ var switches = [
     ['-o', '--out-link FILE', 'Change the name of the symlink to the output path created from result to outlink'],
     ['-A', '--attr NAME', 'Selects an instance of the top-level packages object'],
     ['--no-out-link', 'Do not create a symlink to the output path'],
-    ['--eval-only', 'Causes the tool to only generate a Nix expression without evaluating it']
+    ['--eval-only', 'Causes the tool to only generate a Nix expression without evaluating it'],
+    ['--async', 'Indicates whether the deployment modules are defined asynchronously']
 ];
 
 var parser = new optparse.OptionParser(switches);
@@ -26,6 +27,7 @@ var noOutLink = false;
 var evalOnly = false;
 var executable = "";
 var filename = null;
+var async = false;
 
 /* Define process rules for option parameters */
 
@@ -55,6 +57,10 @@ parser.on('no-out-link', function(arg, value) {
 
 parser.on('eval-only', function(arg, value) {
     evalOnly = true;
+});
+
+parser.on('async', function(arg, value) {
+    async = true;
 });
 
 /* Define process rules for non-option parameters */
@@ -123,7 +129,8 @@ if(attr === null) {
 if(evalOnly) {
     operations.evaluateModule({
         filename : filename,
-        attr : attr
+        attr : attr,
+        async : async
     });
 } else {
     operations.nijsBuild({
@@ -132,6 +139,7 @@ if(evalOnly) {
         showTrace : showTrace,
         keepFailed : keepFailed,
         outLink : outLink,
-        noOutLink : noOutLink
+        noOutLink : noOutLink,
+        async : async
     });
 }

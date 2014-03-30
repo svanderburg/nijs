@@ -8,7 +8,8 @@ exports.pkg = function(args) {
       module : module
     }),
     deps : [
-      args.optparse()
+      args.optparse(),
+      args.slasp()
     ],
     
     meta : {

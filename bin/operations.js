@@ -3,6 +3,7 @@
  * Contains NiJS operations to be executed from the command-line interface.
  */
 var path = require('path');
+var slasp = require('slasp');
 var nijs = require('../lib/nijs.js');
 
 /**
@@ -25,15 +26,47 @@ function evaluatePackage(filename, attr) {
 /**
  * @member operations
  *
+ * Imports the given package composition CommonJS module and asynchronously
+ * evaluates the specified package.
+ *
+ * @param {String} filename Path to the package composition CommonJS module
+ * @param {String} attr Name of the package to evaluate
+ * @param {Function} callback Callback that gets invoked with either an error set if the operation failed, or a string containing the generated Nix expression
+ */
+function evaluatePackageAsync(filename, attr, callback) {
+    var pkgs = require(path.resolve(filename)).pkgs;
+    
+    slasp.sequence([
+        function(callback) {
+            pkgs[attr](callback);
+        },
+        
+        function(callback, pkg) {
+            var expr = nijs.jsToNix(pkg);
+            callback(null, expr);
+        }
+    ], callback);
+}
+
+/**
+ * @member operations
+ *
  * Evaluates the given package expression and redirects it to the standard output.
  *
  * @param {Object} args Arguments to this function
  * @param {String} args.filename Path to the package composition CommonJS module
  * @param {String} args.attr Name of the package to evaluate
+ * @param {Boolean} args.async Indicates whether the deployment modules are defined asynchronously
  */
 exports.evaluateModule = function(args) {
-    var expr = evaluatePackage(args.filename, args.attr);
-    process.stdout.write(expr + "\n");
+    if(args.async) {
+        evaluatePackageAsync(args.filename, args.attr, function(err, expr) {
+            process.stdout.write(expr + "\n");
+        });
+    } else {
+        var expr = evaluatePackage(args.filename, args.attr);
+        process.stdout.write(expr + "\n");
+    }
 };
 
 /**
@@ -48,11 +81,9 @@ exports.evaluateModule = function(args) {
  * @param {String} args.keepFailed Specifies whether the build result must be kept in case of an error
  * @param {String} args.outLink Specifies the path to the resulting output symlink
  * @param {Boolean} args.noOutLink Disables the creation of the result symlink
+ * @param {Boolean} args.async Indicates whether the deployment modules are defined asynchronously
  */
 exports.nijsBuild = function(args) {
-    /* Evaluate the package */
-    var expr = evaluatePackage(args.filename, args.attr);
-    
     /* Compose parameters to nix-build */
     var params = [];
     
@@ -70,17 +101,33 @@ exports.nijsBuild = function(args) {
     if(args.noOutLink)
         params.push("--no-out-link");
     
-    /* Call nix-build */
-    nijs.callNixBuild({
-        nixExpression : expr,
-        params : params,
-        callback : function(err, result) {
-            if(err) {
-                process.stdout.write(result + "\n");
+    /* Evaluate the package */
+
+    slasp.sequence([
+        function(callback) {
+            if(args.async) {
+                evaluatePackageAsync(args.filename, args.attr, callback);
             } else {
-                process.stderr.write(err + "\n");
-                process.exit(1);
+                var expr = evaluatePackage(args.filename, args.attr);
+                callback(null, expr);
             }
+        },
+        
+        function(callback, expr) {
+            /* Call nix-build */
+            nijs.callNixBuild({
+                nixExpression : expr,
+                params : params,
+                callback : callback
+            });
+        }
+        
+    ], function(err, result) {
+        if(err) {
+            process.stderr.write(err + "\n");
+            process.exit(1);
+        } else {
+            process.stdout.write(result + "\n");
         }
     });
 };

@@ -18,16 +18,19 @@ var interfacePath = path.join(path.dirname(module.filename), "interface.js");
 /* Compose command line arguments to invoke the interface */
 args = [ interfacePath ].concat(args);
 
-/* Compose environment that contains nijs in the NODE_PATH */
+/*
+ * Compose environment that contains nijs and its dependencies in the NODE_PATH
+ * environment variable
+ */
 
 var nijsPath = path.resolve(path.join(path.dirname(module.filename), "..", ".."));
 
 var newEnv = process.env;
 
 if(newEnv.NODE_PATH === undefined || newEnv.NODE_PATH == "")
-    newEnv.NODE_PATH = nijsPath;
+    newEnv.NODE_PATH = nijsPath + path.delimiter + path.join(nijsPath, "nijs", "node_modules");
 else
-    newEnv.NODE_PATH = newEnv.NODE_PATH + path.delimiter + nijsPath;
+    newEnv.NODE_PATH = nijsPath + path.delimiter + path.join(nijsPath, "nijs", "node_modules") + path.delimiter + newEnv.NODE_PATH;
 
 /* Spawn the interface process */
 var nijsBuildProcess = child_process.spawn(nodeCommand, args, { env: newEnv });

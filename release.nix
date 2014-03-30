@@ -41,6 +41,7 @@ let
         passthru.names = [ "nijs" ];
         deps = [
           pkgs.nodePackages.optparse
+          pkgs.nodePackages.slasp
         ];
       });
   
@@ -95,9 +96,27 @@ let
           python = nijsImportPackage { inherit pkgsJsFile; attrName = "python"; };
           nodejs = nijsImportPackage { inherit pkgsJsFile; attrName = "nodejs"; };
           optparse = nijsImportPackage { inherit pkgsJsFile; attrName = "optparse"; };
+          slasp = nijsImportPackage { inherit pkgsJsFile; attrName = "slasp"; };
           nijs = nijsImportPackage { inherit pkgsJsFile; attrName = "nijs"; };
         };
-      };
+    
+      pkgs_async =
+        let
+          pkgsJsFile = "${./.}/tests/pkgs-async.js";
+          
+          nijsImportPackageAsync = import ./lib/importPackageAsync.nix {
+            inherit nixpkgs;
+            system = builtins.currentSystem;
+            nijs = builtins.getAttr (builtins.currentSystem) (jobs.build);
+          };
+        in
+        {
+          test = nijsImportPackageAsync { inherit pkgsJsFile; attrName = "test"; };
+          hello = nijsImportPackageAsync { inherit pkgsJsFile; attrName = "hello"; };
+          zlib = nijsImportPackageAsync { inherit pkgsJsFile; attrName = "zlib"; };
+          file = nijsImportPackageAsync { inherit pkgsJsFile; attrName = "file"; };
+        };
+    };
   };
 in
 jobs

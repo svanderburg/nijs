@@ -1,0 +1,23 @@
+{
+  "gnu" : [
+    "http://ftpmirror.gnu.org/",
+    "http://ftp.nluug.nl/pub/gnu/",
+    "http://mirrors.kernel.org/gnu/",
+    "ftp://mirror.cict.fr/gnu/",
+    "ftp://ftp.cs.tu-berlin.de/pub/gnu/",
+    "ftp://ftp.chg.ru/pub/gnu/",
+    "ftp://ftp.funet.fi/pub/mirrors/ftp.gnu.org/gnu/",
+    "http://ftp.gnu.org/pub/gnu/"
+  ],
+  
+  "sourceforge" : [
+    "http://prdownloads.sourceforge.net/",
+    "http://heanet.dl.sourceforge.net/sourceforge/",
+    "http://surfnet.dl.sourceforge.net/sourceforge/",
+    "http://dfn.dl.sourceforge.net/sourceforge/",
+    "http://mesh.dl.sourceforge.net/sourceforge/",
+    "http://ovh.dl.sourceforge.net/sourceforge/",
+    "http://osdn.dl.sourceforge.net/sourceforge/",
+    "http://kent.dl.sourceforge.net/sourceforge/"
+  ]
+}

@@ -170,11 +170,19 @@ var pkgs = {
     });
   },
   
+  slasp : function() {
+    return require('./pkgs/slasp.js').pkg({
+      buildNodePackage : pkgs.buildNodePackage,
+      fetchurl : pkgs.fetchurl
+    });
+  },
+  
   nijs : function() {
     return require('./pkgs/nijs.js').pkg({
       buildNodePackage : pkgs.buildNodePackage,
       fetchurl : pkgs.fetchurl,
-      optparse : pkgs.optparse
+      optparse : pkgs.optparse,
+      slasp : pkgs.slasp
     });
   }
 };
