@@ -90,6 +90,12 @@ let
           addressPersons = nijsImportPackage { inherit pkgsJsFile; attrName = "addressPersons"; };
           numbers = nijsImportPackage { inherit pkgsJsFile; attrName = "numbers"; };
           sayHello2 = nijsImportPackage { inherit pkgsJsFile; attrName = "sayHello2"; };
+          bzip2 = nijsImportPackage { inherit pkgsJsFile; attrName = "bzip2"; };
+          utillinux = nijsImportPackage { inherit pkgsJsFile; attrName = "utillinux"; };
+          python = nijsImportPackage { inherit pkgsJsFile; attrName = "python"; };
+          nodejs = nijsImportPackage { inherit pkgsJsFile; attrName = "nodejs"; };
+          optparse = nijsImportPackage { inherit pkgsJsFile; attrName = "optparse"; };
+          nijs = nijsImportPackage { inherit pkgsJsFile; attrName = "nijs"; };
         };
       };
   };
