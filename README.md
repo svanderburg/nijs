@@ -21,6 +21,7 @@ Prerequisites
 =============
 * In order to use the components in this package, a [Node.js](http://nodejs.org) installation is required.
 * To use the `nijs-build` command-line utility, we require the [optparse](https://github.com/jfd/optparse-js) library to be installed either through Nix or NPM
+* The [slasp](https://github.com/svanderburg/slasp) library is used to make asynchronous programming more convenient.
 * Of course, since this package provides a feature for Nix, we require the [Nix package manager](http://nixos.org/nix) to be installed
 
 Installation
@@ -434,12 +435,131 @@ no parameters) or a string that contains embedded JavaScript code. The
 former case (the function approach) has the advantage that its syntax can be
 checked or visualised by an editor, interpreter or compiler.
 
+Specifying packages asynchronously
+----------------------------------
+Earlier, we have shown that we can describe package specifications in JavaScript.
+The example shown previously (specifying GNU Hello) is a *synchronous* package
+specification. We can also specify packages asynchronously, for example:
+
+    var nijs = require('nijs');
+    var slasp = require('slasp');
+
+    exports.pkg = function(args, callback) {
+      slasp.sequence([
+        function(callback) {
+          args.fetchurl()({
+            url : new nijs.NixURL("mirror://gnu/hello/hello-2.8.tar.gz"),
+            sha256 : "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"
+          }, callback);
+        },
+    
+        function(callback, src) {
+          args.stdenv().mkDerivation ({
+            name : "hello-2.8",
+            src : src,
+  
+            doCheck : true,
+
+            meta : {
+              description : "A program that produces a familiar, friendly greeting",
+              homepage : new nijs.NixURL("http://www.gnu.org/software/hello/manual"),
+              license : "GPLv3+"
+            }
+          }, callback);
+        }
+      ], callback);
+    };
+
+The above expression has the same meaning as the synchronous GNU Hello
+expression, but implements an interface using callbacks. Moreover, it uses the
+`slasp` library to flatten the code structure to make it better readable and
+maintainable.
+
+Composing packages asynchronously
+---------------------------------
+Asynchronous packages also have to be composed in a slightly different way:
+
+    var pkgs = {
+
+      stdenv : function(callback) {
+        return require('./pkgs-async/stdenv.js').pkg;
+      },
+  
+      fetchurl : function(callback) {
+        return require('./pkgs-async/fetchurl').pkg({
+          stdenv : pkgs.stdenv
+        }, callback);
+      },
+  
+      hello : function(callback) {
+        return require('./pkgs-async/hello.js').pkg({
+          stdenv : pkgs.stdenv,
+          fetchurl : pkgs.fetchurl
+        }, callback);
+      },
+
+      ...
+    };
+
+    exports.pkgs = pkgs;
+
+The above composition module has the same meaning as the synchronous composition
+module shown earlier. The main difference is that all functions provide a
+callback interface.
+
+Building asynchronous packages through a command-line utility
+-------------------------------------------------------------
+The NiJS build tool can also compile asynchronous packages to Nix expressions and
+build them with Nix.
+
+To allow the asynchronous modules to be recognized we need to add the `--async`
+parameter:
+
+    $ nijs-build pkgs-async.js -A hello --async
+
+Executing asynchronous package specifications directly
+------------------------------------------------------
+Another use case of asynchronous packages (which cannot be done with synchronous
+package specifications) is that they can be built directly, without using the Nix
+package manager.
+
+The following command uses NiJS to build the same package:
+
+    $ nijs-execute pkgs-async.js -A hello
+
+Packages are stored in a so-called NiJS store. By default, this folder resides in
+`$HOME/.nijs/store` but NiJS can be configured to store it elsewhere.
+
+Although NiJS is capable of building packages, its features and facilities are
+quite primitive. It should only be used for simple (test) use cases or as a toy.
+
+Building asynchronous NiJS packages from a Nix expression
+---------------------------------------------------------
+As with synchronous package specifications, we can also call asynchronous
+composition modules from Nix expressions.
+
+To do this the `nijsImportPackageAsync {}` function should be used:
+
+    {nixpkgs, system, nijs}:
+
+    let
+      nijsImportPackageAsync = import "${nijs}/lib/node_modules/nijs/lib/importPackageAsync.nix" {
+        inherit nixpkgs system nijs;
+      };
+    in
+    {
+      hello = nijsImportPackageAsync { pkgsJsFile = ./tests/pkgs/pkgs-async.js; attrName = "hello"; };
+      ...
+    }
+
+
 Examples
 ========
 The `tests/` directory contains a number of interesting example cases:
 
 * `pkgs.js` is a composition module containing a collection of NiJS packages
 * `proxytests.nix` is a composition Nix expression containing a collection of JavaScript function invocations from Nix expressions
+* `pkgs-async.js` is a composition module containing a collection of NiJS packages that are specified asynchronously
 
 API documentation
 =================
