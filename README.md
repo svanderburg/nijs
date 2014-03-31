@@ -20,8 +20,8 @@ it offers a number of additional features.
 Prerequisites
 =============
 * In order to use the components in this package, a [Node.js](http://nodejs.org) installation is required.
-* To use the `nijs-build` command-line utility, we require the [optparse](https://github.com/jfd/optparse-js) library to be installed either through Nix or NPM
-* The [slasp](https://github.com/svanderburg/slasp) library is used to make asynchronous programming more convenient.
+* To use the `nijs-build` and `nijs-execute` command-line utilities, we require the [optparse](https://github.com/jfd/optparse-js) library to be installed either through Nix or NPM
+* The [slasp](https://github.com/svanderburg/slasp) library is required to make asynchronous programming more convenient.
 * Of course, since this package provides a feature for Nix, we require the [Nix package manager](http://nixos.org/nix) to be installed
 
 Installation
@@ -477,7 +477,8 @@ maintainable.
 
 Composing packages asynchronously
 ---------------------------------
-Asynchronous packages also have to be composed in a slightly different way:
+Asynchronous packages also have to be composed by passing the required
+dependencies of a package as function parameters:
 
     var pkgs = {
 
@@ -504,7 +505,7 @@ Asynchronous packages also have to be composed in a slightly different way:
     exports.pkgs = pkgs;
 
 The above composition module has the same meaning as the synchronous composition
-module shown earlier. The main difference is that all functions provide a
+module shown earlier. The minor difference is that all functions provide a
 callback interface.
 
 Building asynchronous packages through a command-line utility
@@ -512,8 +513,8 @@ Building asynchronous packages through a command-line utility
 The NiJS build tool can also compile asynchronous packages to Nix expressions and
 build them with Nix.
 
-To allow the asynchronous modules to be recognized we need to add the `--async`
-parameter:
+To allow the asynchronous modules to be recognized we need to pass the `--async`
+parameter to `nijs-build`:
 
     $ nijs-build pkgs-async.js -A hello --async
 
