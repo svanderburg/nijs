@@ -9,7 +9,8 @@
   "author" : "Sander van der Burg <svanderburg@gmail.com>",
   "license" : "MIT",
   "bin" : {
-    "nijs-build" : "./bin/nijs-build.js"
+    "nijs-build" : "./bin/nijs-build.js",
+    "nijs-execute" : "./bin/nijs-execute.js"
   },
   "main" : "./lib/nijs",
   "dependencies" : {

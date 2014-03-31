@@ -8,7 +8,7 @@ var switches = [
     ['--show-trace', 'Causes Nix to print out a stack trace in case of Nix expression evaluation errors'],
     ['-K', '--keep-failed', 'Specifies that in case of a build failure, the temporary directory should not be deleted'],
     ['-o', '--out-link FILE', 'Change the name of the symlink to the output path created from result to outlink'],
-    ['-A', '--attr NAME', 'Selects an instance of the top-level packages object'],
+    ['-A', '--attr NAME', 'Selects an instance of the top-level packages module'],
     ['--no-out-link', 'Do not create a symlink to the output path'],
     ['--eval-only', 'Causes the tool to only generate a Nix expression without evaluating it'],
     ['--async', 'Indicates whether the deployment modules are defined asynchronously']
