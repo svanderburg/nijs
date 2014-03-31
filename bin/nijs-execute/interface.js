@@ -6,7 +6,8 @@ var operations = require('./operations.js');
 var switches = [
     ['-h', '--help', 'Shows help sections'],
     ['-o', '--output', 'Change the output path in which build packages are stored'],
-    ['-A', '--attr NAME', 'Selects an instance of the top-level packages module']
+    ['-A', '--attr NAME', 'Selects an instance of the top-level packages module'],
+    ['--tmpdir', 'Change the temp dir location in which immediate artifacts are stored']
 ];
 
 var parser = new optparse.OptionParser(switches);
@@ -16,6 +17,7 @@ var parser = new optparse.OptionParser(switches);
 var help = false;
 var output = null;
 var attr = null;
+var tmpdir = null;
 
 /* Define process rules for option parameters */
 
@@ -29,6 +31,10 @@ parser.on('output', function(arg, value) {
 
 parser.on('attr', function(arg, value) {
     attr = value;
+});
+
+parser.on('tmpdir', function(arg, value) {
+    tmpdir = value;
 });
 
 /* Define process rules for non-option parameters */
@@ -96,5 +102,7 @@ if(attr === null) {
 
 operations.nijsExecute({
     filename : filename,
-    attr : attr
+    attr : attr,
+    output : output,
+    tmpdir : tmpdir
 });

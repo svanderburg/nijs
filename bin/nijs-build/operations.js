@@ -31,7 +31,7 @@ function evaluatePackage(filename, attr) {
  *
  * @param {String} filename Path to the package composition CommonJS module
  * @param {String} attr Name of the package to evaluate
- * @param {Function} callback Callback that gets invoked with either an error set if the operation failed, or a string containing the generated Nix expression
+ * @param {function(Object, Object)} callback Callback that gets invoked with either an error set if the operation failed, or a string containing the generated Nix expression
  */
 function evaluatePackageAsync(filename, attr, callback) {
     var pkgs = require(path.resolve(filename)).pkgs;
