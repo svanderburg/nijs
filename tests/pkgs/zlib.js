@@ -2,10 +2,10 @@ var nijs = require('nijs');
 
 exports.pkg = function(args) {
   return args.stdenv().mkDerivation({
-    name : "zlib-1.2.7",
+    name : "zlib-1.2.8",
     src : args.fetchurl()({
-      url : new nijs.NixURL("mirror://sourceforge/libpng/zlib/1.2.7/zlib-1.2.7.tar.gz"),
-      sha256 : "1i96gsdvxqb6skp9a58bacf1wxamwi9m9pg4yn7cpf7g7239r77s"
+      url : new nijs.NixURL("mirror://sourceforge/libpng/zlib/1.2.8/zlib-1.2.8.tar.gz"),
+      sha256 : "039agw5rqvqny92cpkrfn243x2gd4xn13hs3xi6isk55d2vqqr9n"
     }),
     configureFlags : "--shared"
   });

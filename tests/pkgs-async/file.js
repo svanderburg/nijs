@@ -7,8 +7,8 @@ exports.pkg = function(args, callback) {
   slasp.sequence([
     function(callback) {
       args.fetchurl()({
-        url : new nijs.NixURL("ftp://ftp.astron.com/pub/file/file-5.11.tar.gz"),
-        sha256 : "c70ae29a28c0585f541d5916fc3248c3e91baa481f63d7ccec53d1534cbcc9b7"
+        url : new nijs.NixURL("ftp://ftp.astron.com/pub/file/file-5.19.tar.gz"),
+        sha256 : "0z1sgrcfy6d285kj5izy1yypf371bjl3247plh9ppk0svaxv714l"
       }, callback);
     },
     
@@ -19,7 +19,7 @@ exports.pkg = function(args, callback) {
     
     function(callback, zlib) {
       args.stdenv().mkDerivation ({
-        name : "file-5.11",
+        name : "file-5.19",
         src : src,
         buildInputs : [ zlib ],
     

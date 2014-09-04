@@ -2,10 +2,10 @@ var nijs = require('nijs');
 
 exports.pkg = function(args) {
   return args.stdenv().mkDerivation({
-    name : "node-0.10.26",
+    name : "node-0.10.31",
     src : args.fetchurl()({
-      url : new nijs.NixURL("http://nodejs.org/dist/v0.10.26/node-v0.10.26.tar.gz"),
-      sha256 : "1ahx9cf2irp8injh826sk417wd528awi4l1mh7vxg7k8yak4wppg"
+      url : new nijs.NixURL("http://nodejs.org/dist/v0.10.31/node-v0.10.31.tar.gz"),
+      sha256 : "1w919kihyjldmd7m6lmzpm22dbs6k9ib4innb7xzskb7i9qq3iq6"
     }),
     
     preConfigure : 'sed -i -e "s|#!/usr/bin/env python|#! $(type -p python)|" configure',

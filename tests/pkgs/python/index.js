@@ -8,10 +8,10 @@ exports.pkg = function(args) {
   ];
 
   return args.stdenv().mkDerivation({
-    name : "python-2.7.5",
+    name : "python-2.7.7",
     src : args.fetchurl()({
-      url : new nijs.NixURL("http://www.python.org/ftp/python/2.7.5/Python-2.7.5.tar.bz2"),
-      sha256 : "0nc091f19sllibvxm6n3qw5pflcphkwwxmz43q26lqafhra7airv"
+      url : new nijs.NixURL("http://www.python.org/ftp/python/2.7.7/Python-2.7.7.tar.xz"),
+      sha256 : "0y6s12rdi89k24p8zarhy9fqmyy459yg0d125c7cac4v136y70r9"
     }),
     
     patches : [

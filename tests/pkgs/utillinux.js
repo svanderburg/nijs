@@ -2,10 +2,10 @@ var nijs = require('nijs');
 
 exports.pkg = function(args) {
   return args.stdenv().mkDerivation({
-    name : "util-linux-2.24",
+    name : "util-linux-2.25",
     src : args.fetchurl()({
-      url : new nijs.NixURL("http://www.kernel.org/pub/linux/utils/util-linux/v2.24/util-linux-2.24.tar.bz2"),
-      sha256 : "1nfnymj03rdcxjb677a9qq1zirppr8csh32cb85qm23x5xndi6v3"
+      url : new nijs.NixURL("https://www.kernel.org/pub/linux/utils/util-linux/v2.25/util-linux-2.25.tar.xz"),
+      sha256 : "02lqww6ck4p47wzc883zdjb1gnwm59hsay4hd5i55mfdv25mmfj7"
     }),
     
     configureFlags : [
