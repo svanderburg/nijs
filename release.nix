@@ -91,6 +91,7 @@ let
           addressPersons = nijsImportPackage { inherit pkgsJsFile; attrName = "addressPersons"; };
           numbers = nijsImportPackage { inherit pkgsJsFile; attrName = "numbers"; };
           sayHello2 = nijsImportPackage { inherit pkgsJsFile; attrName = "sayHello2"; };
+          objToXML = nijsImportPackage { inherit pkgsJsFile; attrName = "objToXML"; };
           bzip2 = nijsImportPackage { inherit pkgsJsFile; attrName = "bzip2"; };
           utillinux = nijsImportPackage { inherit pkgsJsFile; attrName = "utillinux"; };
           python = nijsImportPackage { inherit pkgsJsFile; attrName = "python"; };
@@ -100,7 +101,7 @@ let
           nijs = nijsImportPackage { inherit pkgsJsFile; attrName = "nijs"; };
         };
     
-      pkgs_async =
+      pkgsAsync =
         let
           pkgsJsFile = "${./.}/tests/pkgs-async.js";
           
@@ -115,6 +116,7 @@ let
           hello = nijsImportPackageAsync { inherit pkgsJsFile; attrName = "hello"; };
           zlib = nijsImportPackageAsync { inherit pkgsJsFile; attrName = "zlib"; };
           file = nijsImportPackageAsync { inherit pkgsJsFile; attrName = "file"; };
+          createFileWithMessageTest = nijsImportPackageAsync { inherit pkgsJsFile; attrName = "createFileWithMessageTest"; };
         };
     };
   };
