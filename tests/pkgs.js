@@ -120,6 +120,12 @@ var pkgs = {
     });
   },
   
+  objToXML : function() {
+    return require('./pkgs/objToXML.js').pkg({
+      writeTextFile : pkgs.writeTextFile
+    });
+  },
+  
   bzip2 : function() {
     return require('./pkgs/bzip2.js').pkg({
       stdenv : pkgs.stdenv,
