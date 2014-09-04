@@ -35,7 +35,6 @@ installPhase() {
     mv node_modules/* $out/lib/node_modules
     
     # If we have executables move the .bin folder and create a symlink
-    
     if [ -d node_modules/.bin ]
     then
         mv node_modules/.bin $out/lib/node_modules
