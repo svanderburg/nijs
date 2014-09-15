@@ -91,6 +91,7 @@ tree of objects that are instances of prototypes that inherit from `NixObject`:
 * An object instance of `NixFile` can be used to specify a relative or absolute path to a file. Nix checks whether the file exists and imports it into the Nix store.
 * To encode URLs, an object instance of `NixURL` can be used.
 * Recursive attribute sets (in which attributes are allowed to refer to each other) can be defined by creating an object instance of the `NixRecursiveAttrSet` prototype.
+* Referring to an attribute of an attribute set can be done by creating an object instance of `NixAttrReference`
 * Referring to existing Nix store paths can be done by creating objects that are instances of `NixStorePath`.
 * Defining functions in the Nix expression language instead of JavaScript can be done by instantiating `NixFunction`.
 * A Nix function can be invoked by creating an object that is an instance of the `NixFunInvocation` prototype.

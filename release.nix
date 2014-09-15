@@ -89,6 +89,7 @@ let
           sayHello = nijsImportPackage { inherit pkgsJsFile; attrName = "sayHello"; };
           addressPerson = nijsImportPackage { inherit pkgsJsFile; attrName = "addressPerson"; };
           addressPersons = nijsImportPackage { inherit pkgsJsFile; attrName = "addressPersons"; };
+          addressPersonInformally = nijsImportPackage { inherit pkgsJsFile; attrName = "addressPersonInformally"; };
           numbers = nijsImportPackage { inherit pkgsJsFile; attrName = "numbers"; };
           sayHello2 = nijsImportPackage { inherit pkgsJsFile; attrName = "sayHello2"; };
           objToXML = nijsImportPackage { inherit pkgsJsFile; attrName = "objToXML"; };

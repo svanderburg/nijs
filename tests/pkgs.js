@@ -108,6 +108,12 @@ var pkgs = {
     });
   },
   
+  addressPersonInformally : function() {
+    return require('./pkgs/addressPersonInformally.js').pkg({
+      stdenv : pkgs.stdenv
+    });
+  },
+  
   numbers : function() {
     return require('./pkgs/numbers.js').pkg({
       stdenv : pkgs.stdenv
