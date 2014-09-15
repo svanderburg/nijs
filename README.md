@@ -79,8 +79,8 @@ expression language objects as follows:
 * `null` references are translated into `null` values
 * Objects of type `boolean` and `number` are translated verbatim
 * Objects of type `string` and `xml` are translated verbatim and are automatically escaped
-* `Array`s of objects are recursively translated into lists of objects. Keys are translated into identifiers unless they contain characters not allowing it do to so. If the latter is the case, they are translated into strings.
-* "Ordinary" objects are recursively translated into attribute sets.
+* `Array`s of objects are recursively translated into lists of objects.
+* "Ordinary" objects are recursively translated into attribute sets. Keys are translated into identifiers unless they contain characters not allowing it do to so. If the latter is the case, they are translated into strings.
 * A JavaScript `Function` is wrapped into a function proxy so that it can be invoked from a Nix expression (see section: 'Calling JavaScript functions from Nix expressions')
 * Object members whose values are `undefined` are not included in the generated attribute set. In all other cases `undefined` translates to `null`.
 
