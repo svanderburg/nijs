@@ -5,6 +5,7 @@ exports.pkg = function(args) {
     "number": 1,
     "string": "Hello world",
     "URL": new nijs.NixURL("http://github.com"),
+    "URL2": new nijs.NixURL("http://nixos.org/nix/manual/#chap-quick-start"),
     "null": null,
     "undefined": undefined, // This member should not be visible in the resulting XML
     "listOfStrings": [ "a", "b", "c", 1, 2, 3 ],
