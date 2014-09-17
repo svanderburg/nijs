@@ -11,7 +11,19 @@ exports.pkg = function(args) {
     "listOfStrings": [ "a", "b", "c", 1, 2, 3 ],
     "recursiveAttrSet": new nijs.NixRecursiveAttrSet({
       "number": 2
-    })
+    }),
+    "keywords": {
+      "assert": 0,
+      "else": 1,
+      "if": 2,
+      "in": 3,
+      "inherit": 4,
+      "import": 5,
+      "or": 6,
+      "then": 7,
+      "rec": 8,
+      "with": 9
+    }
   };
   
   return new nijs.NixLet({
