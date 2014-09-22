@@ -61,7 +61,7 @@ var pkgs = {
       openssl : pkgs.openssl
     });
   },
-
+  
   sumTest : function() {
     return require('./pkgs/sumTest.js').pkg({
       stdenv : pkgs.stdenv
@@ -196,6 +196,10 @@ var pkgs = {
       optparse : pkgs.optparse,
       slasp : pkgs.slasp
     });
+  },
+  
+  underscoreTest : function() {
+    return require('./pkgs/underscoreTest.js').pkg;
   }
 };
 

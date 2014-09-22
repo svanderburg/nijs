@@ -92,9 +92,10 @@ tree of objects that are instances of prototypes that inherit from `NixObject`:
 * To encode URLs, an object instance of `NixURL` can be used.
 * Recursive attribute sets (in which attributes are allowed to refer to each other) can be defined by creating an object instance of the `NixRecursiveAttrSet` prototype.
 * Referring to an attribute of an attribute set can be done by creating an object instance of `NixAttrReference`
-* Referring to existing Nix store paths can be done by creating objects that are instances of `NixStorePath`.
 * Defining functions in the Nix expression language instead of JavaScript can be done by instantiating `NixFunction`.
 * A Nix function can be invoked by creating an object that is an instance of the `NixFunInvocation` prototype.
+* An external Nix expression file can be imported by creating a `NixImport` object that refers to an external file.
+* Referring to existing Nix store paths can be done by creating objects that are instances of `NixStorePath`.
 * A let-block containing private values can be defined by means of a `NixLet` object.
 * A value can be imported into the lexical scope of a block by assigning a member of an object, `NixLet`, or `NixRecursiveAttrSet` to an object instance of `NixInherit`.
 * Attributes member of an attribute set can be imported into the lexical scope by creating a `NixWith` object.
