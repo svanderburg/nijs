@@ -23,11 +23,18 @@ exports.pkg = function(args) {
       "then": 7,
       "rec": 8,
       "with": 9
-    }
+    },
+    "greeting": new nijs.NixInherit(),
+    "hello": new nijs.NixInherit("greeting"),
+    "world": new nijs.NixInherit("greeting")
   };
   
   return new nijs.NixLet({
     value: {
+      greeting: {
+        hello: "Hello ",
+        world: "world!"
+      },
       dataXML: new nijs.NixFunInvocation({
         funExpr: new nijs.NixExpression("builtins.toXML"),
         paramExpr: data
