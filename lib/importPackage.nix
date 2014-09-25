@@ -22,22 +22,22 @@ import (pkgs.stdenv.mkDerivation {
       var expr = new nijs.NixLet({
         value : {
           pkgs : new nijs.NixFunInvocation({
-            funExpr: new nijs.NixImport('${nixpkgs}'),
+            funExpr: new nijs.NixImport(new nijs.NixStorePath('${nixpkgs}')),
             paramExpr: {
               system: '${system}'
             }
           }),
           nijs : new nijs.NixStorePath('${nijs}'),
-          nijsFunProxy: nijs.NixFunInvocation({
-            funExpr: new nijs.NixImport("${nijs}/lib/node_modules/nijs/lib/funProxy.nix"),
+          nijsFunProxy: new nijs.NixFunInvocation({
+            funExpr: new nijs.NixImport(new nijs.NixStorePath("${nijs}/lib/node_modules/nijs/lib/funProxy.nix")),
             paramExpr: {
               stdenv: new nijs.NixInherit("pkgs"),
               nodejs: new nijs.NixInherit("pkgs"),
               nijs: new nijs.NixInherit()
             }
           }),
-          newInlineProxy : new nijs.NixFunInvocation({
-            funExpr: new nijs.NixImport("${nijs}/lib/node_modules/nijs/lib/inlineProxy.nix"),
+          nijsInlineProxy : new nijs.NixFunInvocation({
+            funExpr: new nijs.NixImport(new nijs.NixStorePath("${nijs}/lib/node_modules/nijs/lib/inlineProxy.nix")),
             paramExpr: {
               stdenv: new nijs.NixInherit("pkgs"),
               writeTextFile: new nijs.NixInherit("pkgs"),

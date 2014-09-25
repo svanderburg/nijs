@@ -10,7 +10,7 @@ let
     
     function = ''
       function passMessageFile(messageFile) {
-        var message = fs.readFileSync(messageFile.value);
+        var message = fs.readFileSync(messageFile.paramExpr);
         return message.toString();
       }
     '';
