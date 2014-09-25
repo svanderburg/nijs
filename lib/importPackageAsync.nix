@@ -29,10 +29,30 @@ import (pkgs.stdenv.mkDerivation {
           function(callback, _expr) {
               var expr = new nijs.NixLet({
                   value : {
-                      pkgs : new nijs.NixExpression('import ${nixpkgs} { system = "${system}"; }'),
-                      nijs : new nijs.NixExpression('builtins.storePath ${nijs}'),
-                      nijsFunProxy : new nijs.NixExpression('import ${nijs}/lib/node_modules/nijs/lib/funProxy.nix { inherit (pkgs) stdenv nodejs; inherit nijs; }'),
-                      nijsInlineProxy : new nijs.NixExpression('import ${nijs}/lib/node_modules/nijs/lib/inlineProxy.nix { inherit (pkgs) stdenv writeTextFile nodejs; inherit nijs; }')
+                      pkgs : new nijs.NixFunInvocation({
+                          funExpr: new nijs.NixImport('${nixpkgs}'),
+                          paramExpr: {
+                              system: '${system}'
+                          }
+                      }),
+                      nijs : new nijs.NixStorePath('${nijs}'),
+                      nijsFunProxy: nijs.NixFunInvocation({
+                          funExpr: new nijs.NixImport("${nijs}/lib/node_modules/nijs/lib/funProxy.nix"),
+                          paramExpr: {
+                              stdenv: new nijs.NixInherit("pkgs"),
+                              nodejs: new nijs.NixInherit("pkgs"),
+                              nijs: new nijs.NixInherit()
+                          }
+                      }),
+                      newInlineProxy : new nijs.NixFunInvocation({
+                          funExpr: new nijs.NixImport("${nijs}/lib/node_modules/nijs/lib/inlineProxy.nix"),
+                          paramExpr: {
+                              stdenv: new nijs.NixInherit("pkgs"),
+                              writeTextFile: new nijs.NixInherit("pkgs"),
+                              nodejs: new nijs.NixInherit("pkgs"),
+                              nijs: new nijs.NixInherit()
+                          }
+                      })
                   },
                   body : _expr
               });
