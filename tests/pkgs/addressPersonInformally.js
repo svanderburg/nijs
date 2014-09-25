@@ -10,11 +10,16 @@ exports.pkg = function(args) {
     },
     body: args.stdenv().mkDerivation({
       name: "addressPersonInformally",
+      greeting: new nijs.NixAttrReference({
+        attrSetExpr: new nijs.NixExpression("person"),
+        refExpr: new nijs.NixExpression("howToGreet"),
+        orExpr: "Hi"
+      }),
       firstName: new nijs.NixAttrReference({
         attrSetExpr: new nijs.NixExpression("person"),
         refExpr: new nijs.NixExpression("firstName")
       }),
-      buildCommand : "echo Hi $firstName > $out"
+      buildCommand : "echo $greeting $firstName > $out"
     })
   });
 };
