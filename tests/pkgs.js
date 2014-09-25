@@ -132,6 +132,12 @@ var pkgs = {
     });
   },
   
+  conditionals: function() {
+    return require('./pkgs/conditionals.js').pkg({
+      writeTextFile : pkgs.writeTextFile
+    });
+  },
+  
   bzip2 : function() {
     return require('./pkgs/bzip2.js').pkg({
       stdenv : pkgs.stdenv,
