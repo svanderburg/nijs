@@ -93,6 +93,7 @@ let
           numbers = nijsImportPackage { inherit pkgsJsFile; attrName = "numbers"; };
           sayHello2 = nijsImportPackage { inherit pkgsJsFile; attrName = "sayHello2"; };
           objToXML = nijsImportPackage { inherit pkgsJsFile; attrName = "objToXML"; };
+          conditionals = nijsImportPackage { inherit pkgsJsFile; attrName = "conditionals"; };
           bzip2 = nijsImportPackage { inherit pkgsJsFile; attrName = "bzip2"; };
           utillinux = nijsImportPackage { inherit pkgsJsFile; attrName = "utillinux"; };
           python = nijsImportPackage { inherit pkgsJsFile; attrName = "python"; };
