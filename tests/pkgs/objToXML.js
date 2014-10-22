@@ -26,7 +26,10 @@ exports.pkg = function(args) {
     },
     "greeting": new nijs.NixInherit(),
     "hello": new nijs.NixInherit("greeting"),
-    "world": new nijs.NixInherit("greeting")
+    "world": new nijs.NixInherit("greeting"),
+    "emptyObject": {},
+    "emptyRecursiveAttrSet": new nijs.NixRecursiveAttrSet({}),
+    "emptyArray": []
   };
   
   return new nijs.NixLet({
