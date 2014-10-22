@@ -11,7 +11,8 @@ var switches = [
     ['-A', '--attr NAME', 'Selects an instance of the top-level packages module'],
     ['--no-out-link', 'Do not create a symlink to the output path'],
     ['--eval-only', 'Causes the tool to only generate a Nix expression without evaluating it'],
-    ['--async', 'Indicates whether the deployment modules are defined asynchronously']
+    ['--async', 'Indicates whether the deployment modules are defined asynchronously'],
+    ['--format', 'Indicates whether to nicely format to expression (i.e. generating whitespaces) or not']
 ];
 
 var parser = new optparse.OptionParser(switches);
@@ -28,6 +29,7 @@ var evalOnly = false;
 var executable = "";
 var filename = null;
 var async = false;
+var format = false;
 
 /* Define process rules for option parameters */
 
@@ -62,6 +64,11 @@ parser.on('eval-only', function(arg, value) {
 parser.on('async', function(arg, value) {
     async = true;
 });
+
+parser.on('format', function(arg, value) {
+    format = true;
+});
+
 
 /* Define process rules for non-option parameters */
 
@@ -130,7 +137,8 @@ if(evalOnly) {
     operations.evaluateModule({
         filename : filename,
         attr : attr,
-        async : async
+        async : async,
+        format : format
     });
 } else {
     operations.nijsBuild({
@@ -140,6 +148,7 @@ if(evalOnly) {
         keepFailed : keepFailed,
         outLink : outLink,
         noOutLink : noOutLink,
-        async : async
+        async : async,
+        format : format
     });
 }

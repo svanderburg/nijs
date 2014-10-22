@@ -14,12 +14,13 @@ var nijs = require('../../lib/nijs.js');
  *
  * @param {String} filename Path to the package composition CommonJS module
  * @param {String} attr Name of the package to evaluate
+ * @param {Boolean} format Indicates whether to nicely format to expression (i.e. generating whitespaces) or not
  * @return {String} A string containing the generated Nix expression
  */
-function evaluatePackage(filename, attr) {
+function evaluatePackage(filename, attr, format) {
     var pkgs = require(path.resolve(filename)).pkgs;
     var pkg = pkgs[attr]();
-    var expr = nijs.jsToNix(pkg);
+    var expr = nijs.jsToNix(pkg, format);
     return expr;
 }
 
@@ -31,9 +32,10 @@ function evaluatePackage(filename, attr) {
  *
  * @param {String} filename Path to the package composition CommonJS module
  * @param {String} attr Name of the package to evaluate
+ * @param {Boolean} format Indicates whether to nicely format to expression (i.e. generating whitespaces) or not
  * @param {function(Object, Object)} callback Callback that gets invoked with either an error set if the operation failed, or a string containing the generated Nix expression
  */
-function evaluatePackageAsync(filename, attr, callback) {
+function evaluatePackageAsync(filename, attr, format, callback) {
     var pkgs = require(path.resolve(filename)).pkgs;
     
     slasp.sequence([
@@ -42,7 +44,7 @@ function evaluatePackageAsync(filename, attr, callback) {
         },
         
         function(callback, pkg) {
-            var expr = nijs.jsToNix(pkg);
+            var expr = nijs.jsToNix(pkg, format);
             callback(null, expr);
         }
     ], callback);
@@ -56,15 +58,16 @@ function evaluatePackageAsync(filename, attr, callback) {
  * @param {Object} args Arguments to this function
  * @param {String} args.filename Path to the package composition CommonJS module
  * @param {String} args.attr Name of the package to evaluate
+ * @param {Boolean} args.format Indicates whether to nicely format to expression (i.e. generating whitespaces) or not
  * @param {Boolean} args.async Indicates whether the deployment modules are defined asynchronously
  */
 exports.evaluateModule = function(args) {
     if(args.async) {
-        evaluatePackageAsync(args.filename, args.attr, function(err, expr) {
+        evaluatePackageAsync(args.filename, args.attr, args.format, function(err, expr) {
             process.stdout.write(expr + "\n");
         });
     } else {
-        var expr = evaluatePackage(args.filename, args.attr);
+        var expr = evaluatePackage(args.filename, args.attr, args.format);
         process.stdout.write(expr + "\n");
     }
 };
@@ -82,6 +85,7 @@ exports.evaluateModule = function(args) {
  * @param {String} args.outLink Specifies the path to the resulting output symlink
  * @param {Boolean} args.noOutLink Disables the creation of the result symlink
  * @param {Boolean} args.async Indicates whether the deployment modules are defined asynchronously
+ * @param {Boolean} args.format Indicates whether to nicely format to expression (i.e. generating whitespaces) or not
  */
 exports.nijsBuild = function(args) {
     /* Compose parameters to nix-build */
@@ -106,9 +110,9 @@ exports.nijsBuild = function(args) {
     slasp.sequence([
         function(callback) {
             if(args.async) {
-                evaluatePackageAsync(args.filename, args.attr, callback);
+                evaluatePackageAsync(args.filename, args.attr, args.format, callback);
             } else {
-                var expr = evaluatePackage(args.filename, args.attr);
+                var expr = evaluatePackage(args.filename, args.attr, args.format);
                 callback(null, expr);
             }
         },

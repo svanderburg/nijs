@@ -1,5 +1,5 @@
 {stdenv, nodejs, nijs}:
-{name ? null, function, args, modules ? [], requires ? [], NODE_PATH ? "", async ? false}:
+{name ? null, function, args, modules ? [], requires ? [], NODE_PATH ? "", async ? false, format ? false}:
 
 let
   nixToJS = import ./nixToJS.nix { inherit stdenv; };
@@ -33,7 +33,7 @@ import (stdenv.mkDerivation {
                 process.stderr.write(err);
                 process.exit(1);
             } else {
-                fs.writeFileSync("$out", nijs.jsToNix(result));
+                fs.writeFileSync("$out", nijs.jsToNix(result, ${if format then "true" else "false"}));
             }
         }
     };

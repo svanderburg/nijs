@@ -1,6 +1,6 @@
 {
   "name" : "nijs",
-  "version" : "0.0.19",
+  "version" : "0.0.20",
   "description" : "An internal DSL for the Nix package manager in JavaScript",
   "repository" : {
     "type" : "git",

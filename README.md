@@ -233,6 +233,10 @@ Nix expression on the standard output:
 
     $ nijs-build pkgs.js -A hello --eval-only
 
+We can also nicely format the generated expression to improve readability:
+
+    $ nijs-build pkgs.js -A hello --eval-only --format
+
 Building NiJS packages from a Nix expression
 --------------------------------------------
 We can also call the composition CommonJS module from a Nix expression. This is

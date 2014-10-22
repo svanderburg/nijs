@@ -1,5 +1,5 @@
 {nixpkgs, system, nijs}:
-{pkgsJsFile, attrName}:
+{pkgsJsFile, attrName, format ? false}:
 
 let
   pkgs = import nixpkgs { inherit system; };
@@ -49,7 +49,7 @@ import (pkgs.stdenv.mkDerivation {
         body : pkgsJsFile.pkgs['${attrName}']()
       });
 
-      fs.writeFileSync(process.env['out'], nijs.jsToNix(expr));
+      fs.writeFileSync(process.env['out'], nijs.jsToNix(expr, ${if format then "true" else "false"}));
     '';
   };
 })
