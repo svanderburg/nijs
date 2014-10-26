@@ -42,10 +42,10 @@ exports.nijsExecute = function(args) {
 
     pkg(function(err, result) {
         if(err) {
-            process.stderr.write(err.toString());
+            process.stderr.write(err.toString() + "\n");
             process.exit(1);
         } else {
-            process.stdout.write(result);
+            process.stdout.write(result + "\n");
         }
     });
 };
