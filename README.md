@@ -101,6 +101,7 @@ tree of objects that are instances of prototypes that inherit from `NixObject`:
 * A let-block containing private values can be defined by means of a `NixLet` object.
 * A value can be imported into the lexical scope of a block by assigning a member of an object, `NixLet`, or `NixRecursiveAttrSet` to an object instance of `NixInherit`.
 * Attributes member of an attribute set can be imported into the lexical scope by creating a `NixWith` object.
+* Two attribute sets can be merged by creating a `NixMergeAttrs` object.
 * Defining build instructions in JavaScript (as opposed to bash code embedded in strings) can be done by creating a `NixInlineJS` object (see section: 'Writing inline JavaScript code in a NiJS package specification').
 * To literally do stuff in the Nix expression language, compose objects that are instances of the `NixExpression` prototype.
 

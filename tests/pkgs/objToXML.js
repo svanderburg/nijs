@@ -29,7 +29,17 @@ exports.pkg = function(args) {
     "world": new nijs.NixInherit("greeting"),
     "emptyObject": {},
     "emptyRecursiveAttrSet": new nijs.NixRecursiveAttrSet({}),
-    "emptyArray": []
+    "emptyArray": [],
+    "mergedObject": new nijs.NixMergeAttrs({
+      left: {
+        "a": "a",
+        "b": "b"
+      },
+      right: {
+        "a": "a2",
+        "c": "c"
+      }
+    })
   };
   
   return new nijs.NixLet({
