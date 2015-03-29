@@ -120,6 +120,88 @@ let
           file = nijsImportPackageAsync { inherit pkgsJsFile; attrName = "file"; };
           createFileWithMessageTest = nijsImportPackageAsync { inherit pkgsJsFile; attrName = "createFileWithMessageTest"; };
         };
+    
+      execute =
+        let
+          nijs = builtins.getAttr (builtins.currentSystem) build;
+          documentRoot = pkgs.stdenv.mkDerivation {
+            name = "documentroot";
+            
+            srcHello = pkgs.fetchurl {
+              url = mirror://gnu/hello/hello-2.9.tar.gz;
+              sha256 = "19qy37gkasc4csb1d3bdiz9snn8mir2p3aj0jgzmfv0r2hi7mfzc";
+            };
+            
+            srcZlib = pkgs.fetchurl {
+              url = mirror://sourceforge/libpng/zlib/1.2.8/zlib-1.2.8.tar.gz;
+              sha256 = "039agw5rqvqny92cpkrfn243x2gd4xn13hs3xi6isk55d2vqqr9n";
+            };
+            
+            srcFile = pkgs.fetchurl {
+              url = ftp://ftp.astron.com/pub/file/file-5.19.tar.gz;
+              sha256 = "0z1sgrcfy6d285kj5izy1yypf371bjl3247plh9ppk0svaxv714l";
+            };
+            
+            buildCommand = ''
+              mkdir -p $out/hello
+              cp $srcHello $out/hello/hello-2.9.tar.gz
+              mkdir -p $out/libpng/zlib/1.2.8
+              cp $srcZlib $out/libpng/zlib/1.2.8/zlib-1.2.8.tar.gz
+              mkdir -p $out/pub/file
+              cp $srcFile $out/pub/file/file-5.19.tar.gz
+            '';
+          };
+        in
+        with import "${nixpkgs}/nixos/lib/testing.nix" { system = builtins.currentSystem; };
+
+        simpleTest {
+          nodes = {
+            machine = {pkgs, ...}:
+            
+            {
+              networking.extraHosts = ''
+                127.0.0.2 ftpmirror.gnu.org prdownloads.sourceforge.net ftp.astron.com
+              '';
+              
+              services.httpd.enable = true;
+              services.httpd.adminAddr = "admin@localhost";
+              services.httpd.documentRoot = documentRoot;
+              
+              services.vsftpd.enable = true;
+              services.vsftpd.anonymousUser = true;
+              services.vsftpd.anonymousUserHome = "/home/ftp";
+              
+              environment.systemPackages = [ nijs pkgs.stdenv pkgs.gcc pkgs.gnumake ];
+            };
+          };
+          testScript = 
+            ''
+              startAll;
+              
+              # Unpack the tarball to retrieve the testcases
+              $machine->mustSucceed("tar xfvz ${tarball}/tarballs/*.tgz");
+              
+              # Build the 'test' package and check whether the output contains
+              # 'Hello world'
+              my $result = $machine->mustSucceed("cd package/tests && nijs-execute pkgs-async.js -A test");
+              $machine->mustSucceed("[ \"\$(cat ".(substr $result, 0, -1)." | grep 'Hello world')\" != \"\" ]");
+              
+              # Build GNU Hello and see whether we can run it
+              $machine->waitForJob("httpd");
+              $result = $machine->mustSucceed("cd package/tests && nijs-execute pkgs-async.js -A hello");
+              $machine->mustSucceed("\$HOME/.nijs/store/hello-*/bin/hello");
+              
+              # Build file and its dependencies (zlib) and see whether we can
+              # run it
+              $machine->mustSucceed("cp -r ${documentRoot}/pub /home/ftp");
+              $machine->waitForJob("vsftpd");
+              $result = $machine->mustSucceed("cd package/tests && nijs-execute pkgs-async.js -A file");
+              $machine->mustSucceed("\$HOME/.nijs/store/file-*/bin/file --version");
+              
+              # Two of file's shared libraries (libmagic and libz) should refer to the NiJS store
+              $machine->mustSucceed("[ \"\$(ldd \$HOME/.nijs/store/file-*/bin/file | grep -c \$HOME/.nijs/store)\" = \"2\" ]");
+            '';
+        };
     };
   };
 in

@@ -12,7 +12,7 @@ exports.pkg = function(args) {
     else if(funArgs.url instanceof nijs.NixURL)
         urlString = funArgs.url.value;
     else
-        throw "The specified url is in an unknown format!";
+        callback("The specified url is in an unknown format!");
     
     var name;
   
@@ -36,7 +36,7 @@ exports.pkg = function(args) {
         outputHashAlgo = "sha256";
         outputHash = funArgs.sha256;
     } else {
-        throw "No output hash specified! Specify either 'md5', 'sha1', or 'sha256'!";
+        callback("No output hash specified! Specify either 'md5', 'sha1', or 'sha256'!");
     }
     
     /* Pick the right list of mirrors, in case a mirror:// url has been specified */
