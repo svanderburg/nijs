@@ -1,3 +1,5 @@
+var fs = require('fs');
+var path = require('path');
 var optparse = require('optparse');
 var operations = require('./operations.js');
 
@@ -5,6 +7,7 @@ var operations = require('./operations.js');
 
 var switches = [
     ['-h', '--help', 'Shows help sections'],
+    ['-v', '--version', 'Shows the version'],
     ['--show-trace', 'Causes Nix to print out a stack trace in case of Nix expression evaluation errors'],
     ['-K', '--keep-failed', 'Specifies that in case of a build failure, the temporary directory should not be deleted'],
     ['-o', '--out-link FILE', 'Change the name of the symlink to the output path created from result to outlink'],
@@ -20,6 +23,7 @@ var parser = new optparse.OptionParser(switches);
 /* Set some variables and their default values */
 
 var help = false;
+var version = false;
 var showTrace = false;
 var keepFailed = false;
 var outLink = null;
@@ -35,6 +39,10 @@ var format = false;
 
 parser.on('help', function(arg, value) {
     help = true;
+});
+
+parser.on('version', function(arg, value) {
+    version = true;
 });
 
 parser.on('show-trace', function(arg, value) {
@@ -93,15 +101,20 @@ if(help) {
         }
     }
 
-    process.stdout.write("Usage:\n\n");
-    process.stdout.write(executable + " [options] -A package pkgs.js\n\n");
-    process.stdout.write("Options:\n\n");
+    process.stdout.write("Usage: " + executable + " [options] -A package pkgs.js\n\n");
+    
+    process.stdout.write("Converts a given CommonJS module defining a Nix expression in a semi-abstract\n");
+    process.stdout.write("syntax into a Nix expression and builds it using `nix-build'\n\n");
+    
+    process.stdout.write("Options:\n");
     
     var maxlen = 20;
     
     for(var i = 0; i < switches.length; i++) {
     
         var currentSwitch = switches[i];
+        
+        process.stdout.write("  ");
         
         if(currentSwitch.length == 3) {
             process.stdout.write(currentSwitch[0] + ", "+currentSwitch[1]);
@@ -116,6 +129,15 @@ if(help) {
         process.stdout.write("\n");
     }
     
+    process.exit(0);
+}
+
+/* Display the version, if it has been requested */
+
+if(version) {
+    var versionNumber = fs.readFileSync(path.join("..", "..", "version"));
+    process.stdout.write(executable + " (nijs "+versionNumber+")\n\n");
+    process.stdout.write("Copyright (C) 2012-2015 Sander van der Burg\n");
     process.exit(0);
 }
 

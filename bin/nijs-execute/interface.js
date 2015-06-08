@@ -1,3 +1,5 @@
+var fs = require('fs');
+var path = require('path');
 var optparse = require('optparse');
 var operations = require('./operations.js');
 
@@ -5,6 +7,7 @@ var operations = require('./operations.js');
 
 var switches = [
     ['-h', '--help', 'Shows help sections'],
+    ['-v', '--version', 'Shows the version'],
     ['-o', '--output', 'Change the output path in which build packages are stored'],
     ['-A', '--attr NAME', 'Selects an instance of the top-level packages module'],
     ['--tmpdir', 'Change the temp dir location in which immediate artifacts are stored']
@@ -15,6 +18,7 @@ var parser = new optparse.OptionParser(switches);
 /* Set some variables and their default values */
 
 var help = false;
+var version = false;
 var output = null;
 var attr = null;
 var tmpdir = null;
@@ -23,6 +27,10 @@ var tmpdir = null;
 
 parser.on('help', function(arg, value) {
     help = true;
+});
+
+parser.on('version', function(arg, value) {
+    version = true;
 });
 
 parser.on('output', function(arg, value) {
@@ -60,15 +68,21 @@ if(help) {
         }
     }
 
-    process.stdout.write("Usage:\n\n");
-    process.stdout.write(executable + " [options] -A package pkgs.js\n\n");
-    process.stdout.write("Options:\n\n");
+    process.stdout.write("Usage: " + executable + " [options] -A package pkgs.js\n\n");
+    
+    process.stdout.write("Directly executes the a given CommonJS module defining a set of package\n");
+    process.stdout.write("configurations, making it possible to directly build NiJS packages without the\n");
+    process.stdout.write("Nix package manager.\n\n");
+    
+    process.stdout.write("Options:\n");
     
     var maxlen = 20;
     
     for(var i = 0; i < switches.length; i++) {
     
         var currentSwitch = switches[i];
+        
+        process.stdout.write("  ");
         
         if(currentSwitch.length == 3) {
             process.stdout.write(currentSwitch[0] + ", "+currentSwitch[1]);
@@ -83,6 +97,15 @@ if(help) {
         process.stdout.write("\n");
     }
     
+    process.exit(0);
+}
+
+/* Display the version, if it has been requested */
+
+if(version) {
+    var versionNumber = fs.readFileSync(path.join("..", "..", "version"));
+    process.stdout.write(executable + " (nijs "+versionNumber+")\n\n");
+    process.stdout.write("Copyright (C) 2012-2015 Sander van der Burg\n");
     process.exit(0);
 }
 
