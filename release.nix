@@ -6,48 +6,26 @@
 let
   pkgs = import nixpkgs {};
   
-  version = builtins.readFile ./version;
+  version = (builtins.fromJSON ./package.json).version;
   
-  determineTarballPath = tarball: {
-    name = "nijs-tarball";
-    outPath = "${tarball}/tarballs/nijs-${version}.tgz";
+  jobset = import ./default.nix {
+    inherit pkgs;
+    system = builtins.currentSystem;
   };
-
+  
   jobs = rec {
-    tarball = pkgs.releaseTools.sourceTarball {
-      name = "nijs-tarball";
-      inherit version;
-      src = ./.;
-      inherit officialRelease;
-      distPhase = ''
-        mkdir -p package
-        cd package
-        cp -av $src/* .
-        cd ..
-        tar cfvz nijs-${version}.tgz package
-        mkdir -pv $out/tarballs
-        cp *.tgz $out/tarballs
-      '';
-    };
+    inherit (jobset) tarball;
   
-    build = pkgs.lib.genAttrs systems (system:
-      let
+    package = pkgs.lib.genAttrs systems (system:
+      (import ./default.nix {
         pkgs = import nixpkgs { inherit system; };
-      in
-      pkgs.nodePackages.buildNodePackage {
-        name = "nijs-${version}";
-        src = [ (determineTarballPath tarball) ];
-  
-        passthru.names = [ "nijs" ];
-        deps = [
-          pkgs.nodePackages.optparse
-          pkgs.nodePackages.slasp
-        ];
-      });
-  
+        inherit system;
+      }).package
+    );
+    
     doc = pkgs.stdenv.mkDerivation {
       name = "nijs-docs-${version}";
-      src = determineTarballPath tarball;
+      src = "${tarball}/tarballs/nijs-${version}.tgz";
     
       buildInputs = [ pkgs.rubyLibs.jsduck ];
       buildPhase = "make duck";
@@ -61,7 +39,7 @@ let
     tests = {
       proxytests = import ./tests/proxytests.nix {
         inherit pkgs;
-        nijs = builtins.getAttr (builtins.currentSystem) (jobs.build);
+        nijs = builtins.getAttr (builtins.currentSystem) (jobs.package);
       };
     
       pkgs = 
@@ -71,7 +49,7 @@ let
           nijsImportPackage = import ./lib/importPackage.nix {
             inherit nixpkgs;
             system = builtins.currentSystem;
-            nijs = builtins.getAttr (builtins.currentSystem) (jobs.build);
+            nijs = builtins.getAttr (builtins.currentSystem) (jobs.package);
           };
         in
         {
@@ -110,7 +88,7 @@ let
           nijsImportPackageAsync = import ./lib/importPackageAsync.nix {
             inherit nixpkgs;
             system = builtins.currentSystem;
-            nijs = builtins.getAttr (builtins.currentSystem) (jobs.build);
+            nijs = builtins.getAttr (builtins.currentSystem) (jobs.package);
           };
         in
         {
@@ -123,7 +101,7 @@ let
     
       execute =
         let
-          nijs = builtins.getAttr (builtins.currentSystem) build;
+          nijs = builtins.getAttr (builtins.currentSystem) package;
           documentRoot = pkgs.stdenv.mkDerivation {
             name = "documentroot";
             

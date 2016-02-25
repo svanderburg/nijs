@@ -1,5 +1,5 @@
 { pkgs ? import <nixpkgs> {}
-, nijs ? builtins.getAttr (builtins.currentSystem) ((import ../release.nix {}).build)
+, nijs ? builtins.getAttr (builtins.currentSystem) ((import ../release.nix {}).package)
 }:
 
 let
