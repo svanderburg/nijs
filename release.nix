@@ -6,7 +6,7 @@
 let
   pkgs = import nixpkgs {};
   
-  version = (builtins.fromJSON ./package.json).version;
+  version = (builtins.fromJSON (builtins.readFile ./package.json)).version;
   
   jobset = import ./default.nix {
     inherit pkgs;
