@@ -51,14 +51,16 @@ equivalent Nix function invocation.
 The following code fragment demonstrates a JavaScript function proxy that
 relays a call to the `stdenv.mkDerivation {}` function in Nix:
 
-    var nijs = require('nijs');
+```javascript
+var nijs = require('nijs');
 
-    function mkDerivation(args) {
-      return new nijs.NixFunInvocation({
-        funExpr: new nijs.NixExpression("pkgs.stdenv.mkDerivation"),
-        paramExpr: args
-      });
-    }
+function mkDerivation(args) {
+  return new nijs.NixFunInvocation({
+    funExpr: new nijs.NixExpression("pkgs.stdenv.mkDerivation"),
+    paramExpr: args
+  });
+}
+```
 
 As can be observed, the function proxy has a very simple structure. It takes an
 arbitrary JavaScript object as a parameter and returns a JavaScript object
@@ -119,26 +121,28 @@ By using this proxy we can also describe our own package specifications in
 JavaScript, instead of the Nix expression language. Every package build recipe
 can be written as a CommonJS module, that may look as follows:
 
-    var nijs = require('nijs');
+```javascript
+var nijs = require('nijs');
 
-    exports.pkg = function(args) {
-      return args.stdenv().mkDerivation ({
-        name : "hello-2.8",
+exports.pkg = function(args) {
+  return args.stdenv().mkDerivation ({
+    name : "hello-2.8",
     
-        src : args.fetchurl()({
-          url : new nijs.NixURL("mirror://gnu/hello/hello-2.8.tar.gz"),
-          sha256 : "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"
-        }),
+    src : args.fetchurl()({
+      url : new nijs.NixURL("mirror://gnu/hello/hello-2.8.tar.gz"),
+      sha256 : "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"
+    }),
   
-        doCheck : true,
+    doCheck : true,
 
-        meta : {
-          description : "A program that produces a familiar, friendly greeting",
-          homepage : new nijs.NixURL("http://www.gnu.org/software/hello/manual"),
-          license : "GPLv3+"
-        }
-      });
-    };
+    meta : {
+      description : "A program that produces a familiar, friendly greeting",
+      homepage : new nijs.NixURL("http://www.gnu.org/software/hello/manual"),
+      license : "GPLv3+"
+    }
+  });
+};
+```
 
 A package module exports the `pkg` property, which refers to a function
 definition taking the build-time dependencies of the package as argument object.
@@ -163,29 +167,31 @@ package directly. We have to *compose* it by calling it with its required
 function arguments. Composition is done in the composition module: `pkgs.js` in
 the `tests/` folder. The structure of this file is as follows:
 
-    var pkgs = {
+```javascript
+var pkgs = {
 
-      stdenv : function() {
-        return require('./pkgs/stdenv.js').pkg;
-      },
+  stdenv : function() {
+    return require('./pkgs/stdenv.js').pkg;
+  },
 
-      fetchurl : function() {
-        return require('./pkgs/fetchurl/fetchurl.js').pkg({
-          stdenv : pkgs.stdenv
-        });
-      },
+  fetchurl : function() {
+    return require('./pkgs/fetchurl/fetchurl.js').pkg({
+      stdenv : pkgs.stdenv
+    });
+  },
 
-      hello : function() {
-        return require('./pkgs/hello.js').pkg({
-          stdenv : pkgs.stdenv,
-          fetchurl : pkgs.fetchurl
-        });
-      },
+  hello : function() {
+    return require('./pkgs/hello.js').pkg({
+      stdenv : pkgs.stdenv,
+      fetchurl : pkgs.fetchurl
+    });
+  },
   
-      ...
-    };
+  ...
+};
 
-    exports.pkgs = pkgs;
+exports.pkgs = pkgs;
+```
 
 The above module exports the `pkgs` property that refers to an object in which
 each member refers to a function definition. These functions call the package
@@ -196,22 +202,24 @@ Building packages programmatically
 ----------------------------------
 The `callNixBuild()` function can be used to build a generated Nix expression:
 
-    var nijs = require('nijs');
-    var pkgs = require('pkgs.js').pkgs;
+```javascript
+var nijs = require('nijs');
+var pkgs = require('pkgs.js').pkgs;
 
-    nijs.callNixBuild({
-      nixExpression : pkgs.hello(),
-      params : [],
-      pkgsExpression : "import <nixpkgs> {}", /* Optional parameter, which defaults to this value */
-      callback : function(err, result) {
-        if(err) {
-          process.stderr.write(err);
-          process.exit(1);
-        } else {
-          process.stdout.write(result + "\n");
-        }
-      }
-    });
+nijs.callNixBuild({
+  nixExpression : pkgs.hello(),
+  params : [],
+  pkgsExpression : "import <nixpkgs> {}", /* Optional parameter, which defaults to this value */
+  callback : function(err, result) {
+    if(err) {
+      process.stderr.write(err);
+      process.exit(1);
+    } else {
+      process.stdout.write(result + "\n");
+    }
+  }
+});
+```
 
 In the code fragment above we call the `callNixBuild` function, in which we
 evaluate the hello package that gets built asynchronously by Nix. The
@@ -247,17 +255,19 @@ build and integration server built around Nix.
 The following Nix expression builds the hello package defined in `pkgs.js` shown
 earlier:
 
-    {nixpkgs, system, nijs}:
+```nix
+{nixpkgs, system, nijs}:
 
-    let
-      nijsImportPackage = import "${nijs}/lib/node_modules/nijs/lib/importPackage.nix" {
-        inherit nixpkgs system nijs;
-      };
-    in
-    {
-      hello = nijsImportPackage { pkgsJsFile = ./tests/pkgs/pkgs.js; attrName = "hello"; };
-      ...
-    }
+let
+  nijsImportPackage = import "${nijs}/lib/node_modules/nijs/lib/importPackage.nix" {
+    inherit nixpkgs system nijs;
+  };
+in
+{
+  hello = nijsImportPackage { pkgsJsFile = ./tests/pkgs/pkgs.js; attrName = "hello"; };
+  ...
+}
+```
 
 Calling JavaScript functions from Nix expressions
 -------------------------------------------------
@@ -266,30 +276,32 @@ This can be done by using the `nijsFunProxy` Nix function. The following code
 fragment shows a Nix expression using the `sum()` JavaScript function to add two
 integers and writes the result to a text file in the Nix store:
 
-    {stdenv, nodejs, nijs}:
+```nix
+{stdenv, nodejs, nijs}:
 
-    let
-      nijsFunProxy = import "${nijs}/lib/node_modules/nijs/lib/funProxy.nix" {
-        inherit stdenv nodejs nijs;
-      };
-    
-      sum = a: b: nijsFunProxy {
-        name = "sum"; # Optional, but allows one to read function names in the traces if an error occurs
-        function = ''
-          function sum(a, b) {
-            return a + b;
-          }
-        '';
-        args = [ a b ];
-      };
-    in
-    stdenv.mkDerivation {
-      name = "sum";
-  
-      buildCommand = ''
-        echo ${toString (sum 1 2)} > $out
-      '';
-    }
+let
+  nijsFunProxy = import "${nijs}/lib/node_modules/nijs/lib/funProxy.nix" {
+    inherit stdenv nodejs nijs;
+  };
+
+  sum = a: b: nijsFunProxy {
+    name = "sum"; # Optional, but allows one to read function names in the traces if an error occurs
+    function = ''
+      function sum(a, b) {
+        return a + b;
+      }
+    '';
+    args = [ a b ];
+  };
+in
+stdenv.mkDerivation {
+  name = "sum";
+ 
+  buildCommand = ''
+    echo ${toString (sum 1 2)} > $out
+  '';
+}
+```
 
 As can be observed, the `nijsFunProxy` is a very thin layer that propagates the
 Nix function parameters to the JavaScript function (Nix objects are converted to
@@ -311,48 +323,52 @@ we cannot access anything outside the function's scope. Fortunately, the
 them available to that function. The following code fragment uses the [Underscore](http://underscorejs.org)
 library to convert a list of integers to a list of strings:
 
-    {stdenv, nodejs, nijs, underscore}:
+```nix
+{stdenv, nodejs, nijs, underscore}:
 
-    let
-      nijsFunProxy = import "${nijs}/lib/node_modules/nijs/lib/funProxy.nix" {
-        inherit stdenv nodejs nijs;
-      };
-      
-      underscoreTestFun = numbers: nijsFunProxy {
-        name = "underscoreTestFun";
-        function = ''
-          function underscoreTestFun(numbers) {
-            var words = [ "one", "two", "three", "four", "five" ];
-            var result = [];
-          
-            _.each(numbers, function(elem) {
-              result.push(words[elem - 1]);
-            });
-        
-            return result;
-          }
-        '';
-        args = [ numbers ];
-        modules = [ underscore ];
-        requires = [
-          { var = "_"; module = "underscore"; }
-        ];
-      };
-    in
-    stdenv.mkDerivation {
-      name = "underscoreTest";
+let
+  nijsFunProxy = import "${nijs}/lib/node_modules/nijs/lib/funProxy.nix" {
+    inherit stdenv nodejs nijs;
+  };
   
-      buildCommand = ''
-        echo ${toString (underscoreTestFun [ 5 4 3 2 1 ])} > $out
-      '';
-    }
+  underscoreTestFun = numbers: nijsFunProxy {
+    name = "underscoreTestFun";
+    function = ''
+      function underscoreTestFun(numbers) {
+        var words = [ "one", "two", "three", "four", "five" ];
+        var result = [];
+      
+        _.each(numbers, function(elem) {
+          result.push(words[elem - 1]);
+        });
+    
+        return result;
+      }
+    '';
+    args = [ numbers ];
+    modules = [ underscore ];
+    requires = [
+      { var = "_"; module = "underscore"; }
+    ];
+  };
+in
+stdenv.mkDerivation {
+  name = "underscoreTest";
+ 
+  buildCommand = ''
+    echo ${toString (underscoreTestFun [ 5 4 3 2 1 ])} > $out
+  '';
+}
+```
 
 The `modules` parameter is a list of Node.JS packages (provided through Nixpkgs)
 and the `require` parameter is a list taking var and module pairs. The latter
 parameter is used to automatically generate a collection of require statements.
 In this case, it adds the following line before the function definition:
 
-    var _ = require('underscore');
+```javascript
+var _ = require('underscore');
+```
 
 Calling asynchronous JavaScript functions from Nix expressions
 --------------------------------------------------------------
@@ -366,33 +382,35 @@ returning an object or throwing an exception, we must call the
 The following example uses a timer that calls the success callback function
 after three seconds, with a standard greeting message:
 
-    {stdenv, nodejs, nijs}:
-    
-    let
-      nijsFunProxy = import "${nijs}/lib/node_modules/nijs/lib/funProxy.nix" {
-        inherit stdenv nodejs nijs;
-      };
-      
-      timerTest = message: nijsFunProxy {
-        name = "timerTest";
-        function = ''
-          function timerTest(message) {
-            setTimeout(function() {
-              nijsCallbacks.callback(null, message);
-            }, 3000);
-          }
-        '';
-        args = [ message ];
-        async = true;
-      };
-    in
-    stdenv.mkDerivation {
-      name = "timerTest";
+```nix
+{stdenv, nodejs, nijs}:
+
+let
+  nijsFunProxy = import "${nijs}/lib/node_modules/nijs/lib/funProxy.nix" {
+    inherit stdenv nodejs nijs;
+  };
   
-      buildCommand = ''
-        echo ${timerTest "Hello world! The timer test works!"} > $out
-      '';
-    }
+  timerTest = message: nijsFunProxy {
+    name = "timerTest";
+    function = ''
+      function timerTest(message) {
+        setTimeout(function() {
+          nijsCallbacks.callback(null, message);
+        }, 3000);
+      }
+    '';
+    args = [ message ];
+    async = true;
+  };
+in
+stdenv.mkDerivation {
+  name = "timerTest";
+ 
+  buildCommand = ''
+    echo ${timerTest "Hello world! The timer test works!"} > $out
+  '';
+}
+```
 
 Writing inline JavaScript code in Nix expressions
 -------------------------------------------------
@@ -406,28 +424,30 @@ It may also be desired to implement custom build procedure steps as embedded
 JavaScript code, instead of embedded shell code. The `nijsInlineProxy` function
 allows a developer to write inline JavaScript code inside a Nix expression:
 
-    {stdenv, writeTextFile, nodejs, nijs}:
+```nix
+{stdenv, writeTextFile, nodejs, nijs}:
 
-    let
-      nijsInlineProxy = import "${nijs}/lib/node_modules/nijs/lib/inlineProxy.nix" {
-        inherit stdenv writeTextFile nodejs nijs;
-      };
-    in
-    stdenv.mkDerivation {
-      name = "createFileWithMessage";
-      buildCommand = nijsInlineProxy {
-        name = "createFileWithMessage-buildCommand"; # Optional, but allows one to read function names in the traces if an error occurs
-        requires = [
-          { var = "fs"; module = "fs"; }
-          { var = "path"; module = "path"; }
-        ];
-        code = ''
-          fs.mkdirSync(process.env['out']);
-          var message = "Hello world written through inline JavaScript!";
-          fs.writeFileSync(path.join(process.env['out'], "message.txt"), message);
-        '';
-      };
-    }
+let
+  nijsInlineProxy = import "${nijs}/lib/node_modules/nijs/lib/inlineProxy.nix" {
+    inherit stdenv writeTextFile nodejs nijs;
+  };
+in
+stdenv.mkDerivation {
+  name = "createFileWithMessage";
+  buildCommand = nijsInlineProxy {
+    name = "createFileWithMessage-buildCommand"; # Optional, but allows one to read function names in the traces if an error occurs
+    requires = [
+      { var = "fs"; module = "fs"; }
+      { var = "path"; module = "path"; }
+    ];
+    code = ''
+      fs.mkdirSync(process.env['out']);
+      var message = "Hello world written through inline JavaScript!";
+      fs.writeFileSync(path.join(process.env['out'], "message.txt"), message);
+    '';
+  };
+}
+```
 
 The above example Nix expression implements a custom build procedure that
 creates a Nix component containing a file named `message.txt` with a standard
@@ -453,24 +473,26 @@ code embedded in strings. We can also use the `nijsInlineProxy` from a NiJS
 package module, by creating an object that is an instance of the `NixInlineJS`
 prototype:
 
-    var nijs = require('nijs');
+```javascript
+var nijs = require('nijs');
 
-    exports.pkg = function(args) {
-      return args.stdenv().mkDerivation ({
-        name : "createFileWithMessageTest",
-        buildCommand : new nijs.NixInlineJS({
-          requires : [
-            { "var" : "fs", "module" : "fs" },
-            { "var" : "path", "module" : "path" }
-          ],
-          code : function() {
-            fs.mkdirSync(process.env['out']);
-            var message = "Hello world written through inline JavaScript!";
-            fs.writeFileSync(path.join(process.env['out'], "message.txt"), message);
-          }
-        })
-      });
-    };
+exports.pkg = function(args) {
+  return args.stdenv().mkDerivation ({
+    name : "createFileWithMessageTest",
+    buildCommand : new nijs.NixInlineJS({
+      requires : [
+        { "var" : "fs", "module" : "fs" },
+        { "var" : "path", "module" : "path" }
+      ],
+      code : function() {
+        fs.mkdirSync(process.env['out']);
+        var message = "Hello world written through inline JavaScript!";
+        fs.writeFileSync(path.join(process.env['out'], "message.txt"), message);
+      }
+    })
+  });
+};
+```
 
 The above NiJS package module shows the NiJS equivalent of our first Nix
 expression example containing inline JavaScript code.
@@ -487,34 +509,35 @@ Earlier, we have shown that we can describe package specifications in JavaScript
 The example shown previously (specifying GNU Hello) is a *synchronous* package
 specification. We can also specify packages asynchronously, for example:
 
-    var nijs = require('nijs');
-    var slasp = require('slasp');
+```javascript
+var nijs = require('nijs');
+var slasp = require('slasp');
 
-    exports.pkg = function(args, callback) {
-      slasp.sequence([
-        function(callback) {
-          args.fetchurl()({
-            url : new nijs.NixURL("mirror://gnu/hello/hello-2.8.tar.gz"),
-            sha256 : "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"
-          }, callback);
-        },
-    
-        function(callback, src) {
-          args.stdenv().mkDerivation ({
-            name : "hello-2.8",
-            src : src,
-  
-            doCheck : true,
+exports.pkg = function(args, callback) {
+  slasp.sequence([
+    function(callback) {
+      args.fetchurl()({
+        url : new nijs.NixURL("mirror://gnu/hello/hello-2.8.tar.gz"),
+        sha256 : "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"
+      }, callback);
+    },
 
-            meta : {
-              description : "A program that produces a familiar, friendly greeting",
-              homepage : new nijs.NixURL("http://www.gnu.org/software/hello/manual"),
-              license : "GPLv3+"
-            }
-          }, callback);
+    function(callback, src) {
+      args.stdenv().mkDerivation ({
+        name : "hello-2.8",
+        src : src,
+ 
+        doCheck : true,
+        meta : {
+          description : "A program that produces a familiar, friendly greeting",
+          homepage : new nijs.NixURL("http://www.gnu.org/software/hello/manual"),
+          license : "GPLv3+"
         }
-      ], callback);
-    };
+      }, callback);
+    }
+  ], callback);
+};
+```
 
 The above expression has the same meaning as the synchronous GNU Hello
 expression, but implements an interface using callbacks. Moreover, it uses the
@@ -526,29 +549,31 @@ Composing packages asynchronously
 Asynchronous packages also have to be composed by passing the required
 dependencies of a package as function parameters:
 
-    var pkgs = {
+```javascript
+var pkgs = {
 
-      stdenv : function(callback) {
-        return require('./pkgs-async/stdenv.js').pkg;
-      },
+  stdenv : function(callback) {
+    return require('./pkgs-async/stdenv.js').pkg;
+  },
   
-      fetchurl : function(callback) {
-        return require('./pkgs-async/fetchurl').pkg({
-          stdenv : pkgs.stdenv
-        }, callback);
-      },
+  fetchurl : function(callback) {
+    return require('./pkgs-async/fetchurl').pkg({
+      stdenv : pkgs.stdenv
+    }, callback);
+  },
   
-      hello : function(callback) {
-        return require('./pkgs-async/hello.js').pkg({
-          stdenv : pkgs.stdenv,
-          fetchurl : pkgs.fetchurl
-        }, callback);
-      },
+  hello : function(callback) {
+    return require('./pkgs-async/hello.js').pkg({
+      stdenv : pkgs.stdenv,
+      fetchurl : pkgs.fetchurl
+    }, callback);
+  },
 
-      ...
-    };
+  ...
+};
 
-    exports.pkgs = pkgs;
+exports.pkgs = pkgs;
+```
 
 The above composition module has the same meaning as the synchronous composition
 module shown earlier. The minor difference is that all functions provide a
@@ -587,18 +612,19 @@ composition modules from Nix expressions.
 
 To do this the `nijsImportPackageAsync {}` function should be used:
 
-    {nixpkgs, system, nijs}:
+```nix
+{nixpkgs, system, nijs}:
 
-    let
-      nijsImportPackageAsync = import "${nijs}/lib/node_modules/nijs/lib/importPackageAsync.nix" {
-        inherit nixpkgs system nijs;
-      };
-    in
-    {
-      hello = nijsImportPackageAsync { pkgsJsFile = ./tests/pkgs/pkgs-async.js; attrName = "hello"; };
-      ...
-    }
-
+let
+  nijsImportPackageAsync = import "${nijs}/lib/node_modules/nijs/lib/importPackageAsync.nix" {
+    inherit nixpkgs system nijs;
+  };
+in
+{
+  hello = nijsImportPackageAsync { pkgsJsFile = ./tests/pkgs/pkgs-async.js; attrName = "hello"; };
+  ...
+}
+```
 
 Examples
 ========
