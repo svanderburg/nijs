@@ -42,7 +42,7 @@ let
         nijs = builtins.getAttr (builtins.currentSystem) (jobs.package);
       };
     
-      pkgs = 
+      pkgs =
         let
           pkgsJsFile = "${./.}/tests/pkgs.js";
           
@@ -180,7 +180,21 @@ let
               $machine->mustSucceed("[ \"\$(ldd \$HOME/.nijs/store/file-*/bin/file | grep -c \$HOME/.nijs/store)\" = \"2\" ]");
             '';
         };
-    };
+      };
+      
+      release = pkgs.releaseTools.aggregate {
+        name = "nijs-${version}";
+        constituents = [
+          tarball
+        ]
+        ++ map (system: builtins.getAttr system package) systems
+        ++ map (name: builtins.getAttr name tests.proxytests) (builtins.attrNames tests.proxytests)
+        ++ map (name: builtins.getAttr name tests.pkgs) (builtins.attrNames tests.pkgs)
+        ++ map (name: builtins.getAttr name tests.pkgsAsync) (builtins.attrNames tests.pkgsAsync)
+        ++ [ tests.execute ];
+        
+        meta.description = "Release-critical builds";
+      };
   };
 in
 jobs

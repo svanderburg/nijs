@@ -1,4 +1,5 @@
 { pkgs ? import <nixpkgs> {}
+, system ? builtins.currentSystem
 , nijs ? builtins.getAttr (builtins.currentSystem) ((import ../release.nix {}).package)
 }:
 
@@ -11,6 +12,10 @@ let
   nijsInlineProxy = import ../lib/inlineProxy.nix {
     inherit (pkgs) stdenv writeTextFile nodejs;
     inherit nijs;
+  };
+  
+  customNpmPkgs = import ./custom-npm-pkgs {
+    inherit pkgs system;
   };
 in
 rec {
@@ -41,7 +46,7 @@ rec {
   
   underscoreTest = import ./proxytests/underscoreTest.nix {
     inherit (pkgs) stdenv;
-    inherit (pkgs.nodePackages) underscore;
+    inherit (customNpmPkgs) underscore;
     inherit nijsFunProxy;
   };
   
@@ -57,7 +62,7 @@ rec {
   
   createFileWithUnderscore = import ./proxytests/createFileWithUnderscore.nix {
     inherit (pkgs) stdenv;
-    inherit (pkgs.nodePackages) underscore;
+    inherit (customNpmPkgs) underscore;
     inherit nijsInlineProxy;
   };
   

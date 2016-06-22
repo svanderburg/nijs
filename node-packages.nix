@@ -24,7 +24,7 @@ let
   args = {
     name = "nijs";
     packageName = "nijs";
-    version = "0.0.23";
+    version = "0.0.24";
     src = ./.;
     dependencies = [
       sources."optparse-1.0.5"
