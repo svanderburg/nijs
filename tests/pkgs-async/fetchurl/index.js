@@ -3,7 +3,8 @@ var fs = require('fs');
 var nijs = require('nijs');
 
 exports.pkg = function(args) {
-  return function(funArgs, callback) {
+  return function(funArgs) {
+
     /* Determine the component's name */
     var urlString;
   
@@ -12,7 +13,7 @@ exports.pkg = function(args) {
     else if(funArgs.url instanceof nijs.NixURL)
         urlString = funArgs.url.value;
     else
-        callback("The specified url is in an unknown format!");
+        throw "The specified url is in an unknown format!";
     
     var name;
   
@@ -36,7 +37,7 @@ exports.pkg = function(args) {
         outputHashAlgo = "sha256";
         outputHash = funArgs.sha256;
     } else {
-        callback("No output hash specified! Specify either 'md5', 'sha1', or 'sha256'!");
+        throw "No output hash specified! Specify either 'md5', 'sha1', or 'sha256'!";
     }
     
     /* Pick the right list of mirrors, in case a mirror:// url has been specified */
@@ -63,13 +64,13 @@ exports.pkg = function(args) {
             mirrors[i] = mirrors[i] + filePath;
         }
     
-      } else {
-          mirrors = [ funArgs.url ];
-      }
+    } else {
+        mirrors = [ funArgs.url ];
+    }
   
     /* Create the derivation that specifies the build action */
 
-    args.stdenv().mkDerivation({
+    return args.stdenv().mkDerivation({
         name : name,
 
         mirrors : mirrors,
@@ -98,6 +99,6 @@ exports.pkg = function(args) {
     
         /* We use the host system's curl, which does not work in a chroot */
         __noChroot : true
-      }, callback);
+      });
     };
 };

@@ -2,11 +2,11 @@ var nijs = require('nijs');
 
 exports.pkg = function(args) {
   return args.stdenv().mkDerivation ({
-    name : "hello-2.9",
+    name : "hello-2.10",
     
     src : args.fetchurl()({
-      url : new nijs.NixURL("mirror://gnu/hello/hello-2.9.tar.gz"),
-      sha256 : "19qy37gkasc4csb1d3bdiz9snn8mir2p3aj0jgzmfv0r2hi7mfzc"
+      url : new nijs.NixURL("mirror://gnu/hello/hello-2.10.tar.gz"),
+      sha256 : "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i"
     }),
   
     doCheck : true,

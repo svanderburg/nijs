@@ -64,9 +64,9 @@ exports.pkg = function(args) {
             mirrors[i] = mirrors[i] + filePath;
         }
     
-      } else {
-          mirrors = [ funArgs.url ];
-      }
+    } else {
+        mirrors = [ funArgs.url ];
+    }
   
     /* Create the derivation that specifies the build action */
 

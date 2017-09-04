@@ -2,10 +2,10 @@ var nijs = require('nijs');
 
 exports.pkg = function(args) {
   return args.stdenv().mkDerivation({
-    name : "curl-7.37.1",
+    name : "curl-7.55.1",
     src : args.fetchurl()({
-      url : new nijs.NixURL("http://curl.haxx.se/download/curl-7.37.1.tar.bz2"),
-      sha256 : "0djilbxc0pq6wgwk247ydrjn1nr9g1yi2i5kxzdqsxzk938krvy3"
+      url : new nijs.NixURL("http://curl.haxx.se/download/curl-7.55.1.tar.bz2"),
+      sha256 : "1yvcn7jbh99gsqhc040nky0h15a1cfh8yic6k0a1zhdhscpakcg5"
     }),
     
     propagatedBuildInputs : [
