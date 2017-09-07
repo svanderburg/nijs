@@ -2,7 +2,7 @@ var nijs = require('nijs');
 
 exports.pkg = function(args) {
   return new nijs.NixAssert({
-    conditionExpr: new nijs.NixExpression(true),
+    conditionExpr: true,
     body: new nijs.NixLet({
       value: {
         test: true
