@@ -5,28 +5,28 @@
 
 let
   pkgs = import nixpkgs {};
-  
+
   version = (builtins.fromJSON (builtins.readFile ./package.json)).version;
-  
+
   jobset = import ./default.nix {
     inherit pkgs;
     system = builtins.currentSystem;
   };
-  
+
   jobs = rec {
     inherit (jobset) tarball;
-  
+
     package = pkgs.lib.genAttrs systems (system:
       (import ./default.nix {
         pkgs = import nixpkgs { inherit system; };
         inherit system;
       }).package
     );
-    
+
     doc = pkgs.stdenv.mkDerivation {
       name = "nijs-docs-${version}";
       src = "${tarball}/tarballs/nijs-${version}.tgz";
-    
+
       buildInputs = [ pkgs.rubyLibs.jsduck ];
       buildPhase = "make duck";
       installPhase = ''
@@ -35,17 +35,17 @@ let
         echo "doc api $out" >> $out/nix-support/hydra-build-products
       '';
     };
-  
+
     tests = {
       proxytests = import ./tests/proxytests.nix {
         inherit pkgs;
         nijs = builtins.getAttr (builtins.currentSystem) (jobs.package);
       };
-    
+
       pkgs =
         let
           pkgsJsFile = "${./.}/tests/pkgs.js";
-          
+
           nijsImportPackage = import ./lib/importPackage.nix {
             inherit nixpkgs;
             system = builtins.currentSystem;
@@ -80,11 +80,11 @@ let
           slasp = nijsImportPackage { inherit pkgsJsFile; attrName = "slasp"; };
           nijs = nijsImportPackage { inherit pkgsJsFile; attrName = "nijs"; };
         };
-    
+
       pkgsAsync =
         let
           pkgsJsFile = "${./.}/tests/pkgs-async.js";
-          
+
           nijsImportPackageAsync = import ./lib/importPackageAsync.nix {
             inherit nixpkgs;
             system = builtins.currentSystem;
@@ -98,35 +98,35 @@ let
           file = nijsImportPackageAsync { inherit pkgsJsFile; attrName = "file"; };
           createFileWithMessageTest = nijsImportPackageAsync { inherit pkgsJsFile; attrName = "createFileWithMessageTest"; };
         };
-    
+
       execute =
         let
           nijs = builtins.getAttr (builtins.currentSystem) package;
           documentRoot = pkgs.stdenv.mkDerivation {
             name = "documentroot";
-            
+
             srcHello = pkgs.fetchurl {
-              url = mirror://gnu/hello/hello-2.9.tar.gz;
-              sha256 = "19qy37gkasc4csb1d3bdiz9snn8mir2p3aj0jgzmfv0r2hi7mfzc";
+              url = mirror://gnu/hello/hello-2.10.tar.gz;
+              sha256 = "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i";
             };
-            
+
             srcZlib = pkgs.fetchurl {
-              url = mirror://sourceforge/libpng/zlib/1.2.8/zlib-1.2.8.tar.gz;
-              sha256 = "039agw5rqvqny92cpkrfn243x2gd4xn13hs3xi6isk55d2vqqr9n";
+              url = mirror://sourceforge/libpng/zlib/1.2.11/zlib-1.2.11.tar.gz;
+              sha256 = "18dighcs333gsvajvvgqp8l4cx7h1x7yx9gd5xacnk80spyykrf3";
             };
-            
+
             srcFile = pkgs.fetchurl {
-              url = ftp://ftp.astron.com/pub/file/file-5.19.tar.gz;
-              sha256 = "0z1sgrcfy6d285kj5izy1yypf371bjl3247plh9ppk0svaxv714l";
+              url = ftp://ftp.astron.com/pub/file/file-5.32.tar.gz;
+              sha256 = "0l1bfa0icng9vdwya00ff48fhvjazi5610ylbhl35qi13d6xqfc6";
             };
-            
+
             buildCommand = ''
               mkdir -p $out/hello
-              cp $srcHello $out/hello/hello-2.9.tar.gz
-              mkdir -p $out/libpng/zlib/1.2.8
-              cp $srcZlib $out/libpng/zlib/1.2.8/zlib-1.2.8.tar.gz
+              cp $srcHello $out/hello/hello-2.10.tar.gz
+              mkdir -p $out/libpng/zlib/1.2.11
+              cp $srcZlib $out/libpng/zlib/1.2.11/zlib-1.2.11.tar.gz
               mkdir -p $out/pub/file
-              cp $srcFile $out/pub/file/file-5.19.tar.gz
+              cp $srcFile $out/pub/file/file-5.32.tar.gz
             '';
           };
         in
@@ -135,53 +135,53 @@ let
         simpleTest {
           nodes = {
             machine = {pkgs, ...}:
-            
+
             {
               networking.extraHosts = ''
                 127.0.0.2 ftpmirror.gnu.org prdownloads.sourceforge.net ftp.astron.com
               '';
-              
+
               services.httpd.enable = true;
               services.httpd.adminAddr = "admin@localhost";
               services.httpd.documentRoot = documentRoot;
-              
+
               services.vsftpd.enable = true;
               services.vsftpd.anonymousUser = true;
               services.vsftpd.anonymousUserHome = "/home/ftp";
-              
+
               environment.systemPackages = [ nijs pkgs.stdenv pkgs.gcc pkgs.gnumake ];
             };
           };
           testScript = 
             ''
               startAll;
-              
+
               # Unpack the tarball to retrieve the testcases
               $machine->mustSucceed("tar xfvz ${tarball}/tarballs/*.tgz");
-              
+
               # Build the 'test' package and check whether the output contains
               # 'Hello world'
               my $result = $machine->mustSucceed("cd package/tests && nijs-execute pkgs-async.js -A test");
               $machine->mustSucceed("[ \"\$(cat ".(substr $result, 0, -1)." | grep 'Hello world')\" != \"\" ]");
-              
+
               # Build GNU Hello and see whether we can run it
               $machine->waitForJob("httpd");
               $result = $machine->mustSucceed("cd package/tests && nijs-execute pkgs-async.js -A hello");
               $machine->mustSucceed("\$HOME/.nijs/store/hello-*/bin/hello");
-              
+
               # Build file and its dependencies (zlib) and see whether we can
               # run it
               $machine->mustSucceed("cp -r ${documentRoot}/pub /home/ftp");
               $machine->waitForJob("vsftpd");
               $result = $machine->mustSucceed("cd package/tests && nijs-execute pkgs-async.js -A file");
               $machine->mustSucceed("\$HOME/.nijs/store/file-*/bin/file --version");
-              
+
               # Two of file's shared libraries (libmagic and libz) should refer to the NiJS store
               $machine->mustSucceed("[ \"\$(ldd \$HOME/.nijs/store/file-*/bin/file | grep -c \$HOME/.nijs/store)\" = \"2\" ]");
             '';
         };
       };
-      
+
       release = pkgs.releaseTools.aggregate {
         name = "nijs-${version}";
         constituents = [
@@ -192,7 +192,7 @@ let
         ++ map (name: builtins.getAttr name tests.pkgs) (builtins.attrNames tests.pkgs)
         ++ map (name: builtins.getAttr name tests.pkgsAsync) (builtins.attrNames tests.pkgsAsync)
         ++ [ tests.execute ];
-        
+
         meta.description = "Release-critical builds";
       };
   };

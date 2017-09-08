@@ -8,13 +8,22 @@ let
     inherit (pkgs) stdenv writeTextFile nodejs;
     inherit nijs;
   };
+
+  # Create a wrapper package that exposes the slasp library that comes with nijs
+  slasp = pkgs.stdenv.mkDerivation {
+    name = "slasp-wrapper";
+    buildCommand = ''
+      mkdir -p $out/lib/node_modules
+      ln -s ${nijs}/lib/node_modules/nijs/node_modules/slasp $out/lib/node_modules
+    '';
+  };
 in
 import (pkgs.stdenv.mkDerivation {
   name = "importPackageAsync-${attrName}.nix";
-    
+
   buildCommand = nijsInlineProxy {
     name = "importPackageAsync-${attrName}-buildCommand";
-    modules = [ pkgs.nodePackages.slasp ];
+    modules = [ slasp ];
     requires = [
       { var = "fs"; module = "fs"; }
       { var = "slasp"; module = "slasp"; }
@@ -25,7 +34,7 @@ import (pkgs.stdenv.mkDerivation {
           function(callback) {
               pkgsJsFile.pkgs['${attrName}'](callback);
           },
-          
+
           function(callback, _expr) {
               var expr = new nijs.NixLet({
                   value : {
@@ -56,7 +65,7 @@ import (pkgs.stdenv.mkDerivation {
                   },
                   body : _expr
               });
-              
+
               fs.writeFile(process.env['out'], nijs.jsToNix(expr, ${if format then "true" else "false"}), callback);
           },
       ], function(err) {
