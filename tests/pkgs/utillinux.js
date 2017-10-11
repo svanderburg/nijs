@@ -11,7 +11,9 @@ exports.pkg = function(args) {
     configureFlags : [
       "--without-ncurses",
       "--disable-use-tty-group",
-      "--enable-fs-paths-default=/var/setuid-wrappers:/var/run/current-system/sw/sbin:/sbin"
+      "--enable-fs-paths-default=/var/setuid-wrappers:/var/run/current-system/sw/sbin:/sbin",
+      "--disable-makeinstall-setuid",
+      "--disable-makeinstall-chown"
     ],
     
     buildInputs : [
