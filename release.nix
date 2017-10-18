@@ -79,6 +79,8 @@ let
           optparse = nijsImportPackage { inherit pkgsJsFile; attrName = "optparse"; };
           slasp = nijsImportPackage { inherit pkgsJsFile; attrName = "slasp"; };
           nijs = nijsImportPackage { inherit pkgsJsFile; attrName = "nijs"; };
+          underscoreTest = nijsImportPackage { inherit pkgsJsFile; attrName = "underscoreTest"; };
+          HelloModel = nijsImportPackage { inherit pkgsJsFile; attrName = "HelloModel"; };
         };
 
       pkgsAsync =
@@ -152,7 +154,7 @@ let
               environment.systemPackages = [ nijs pkgs.stdenv pkgs.gcc pkgs.gnumake ];
             };
           };
-          testScript = 
+          testScript =
             ''
               startAll;
 

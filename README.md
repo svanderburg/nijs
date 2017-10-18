@@ -763,7 +763,7 @@ By wrapping the `metadataWrapper` object in the `NixASTNode` constructor, we can
 convert it to an object that is an instanceof `NixASTNode`:
 
 ```javascript
-new NixASTNode(metadataWrapper)
+new nijs.NixASTNode(metadataWrapper)
 ```
 
 Examples
