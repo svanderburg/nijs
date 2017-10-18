@@ -626,6 +626,146 @@ in
 }
 ```
 
+Transforming custom object structures into Nix expressions
+----------------------------------------------------------
+As explained earlier, NiJS transforms objects in the JavaScript language to
+semantically equivalent (or similar) constructs in the Nix expression language.
+
+Sometimes it may also be desired to generate Nix expressions from a domain
+model, designed for solving a specific non-deployment related problem, with
+properties and structures that cannot be literally translated into a
+representation in the Nix expression language.
+
+It is also possible to specify for an object how to generate a Nix expression
+from it. This can be done by inheriting from the `NixASTNode` prototype and
+overriding the `toNixAST` method.
+
+For example, we may have a system already providing a representation of a file
+that should be downloaded from an external source:
+
+```javascript
+function HelloSourceModel(args) {
+    this.args = args;
+    this.src = "mirror://gnu/hello/hello-2.10.tar.gz";
+    this.sha256 = "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i";
+}
+```
+
+The above module defines a constructor function composing an object that refers
+to the GNU Hello package provided by a GNU mirror site.
+
+A direct translation of the above constructed object to the Nix expression
+language does not provide anything meaningful -- it can, for example, not be
+used to let Nix fetch the package from the mirror site.
+
+We can inherit from `NixASTNode` and implement our own custom `toNixAST()`
+function to provide a more meaningful Nix translation:
+
+```javascript
+var nijs = require('nijs');
+var inherit = require('nijs/lib/ast/util/inherit.js').inherit;
+
+/* HelloSourceModel inherits from NixASTNode */
+inherit(nijs.NixASTNode, HelloSourceModel);
+
+/**
+ * @see NixASTNode#toNixAST
+ */
+HelloSourceModel.prototype.toNixAST = function() {
+    return this.args.fetchurl()({
+        url: new nijs.NixURL(this.src),
+        sha256: this.sha256
+    });
+};
+```
+
+The `toNixAST()` function shown above composes an abstract syntax tree (AST) for
+a function invocation to `fetchurl {}`  in the Nix expression language with the
+`url` and `sha256` properties a parameters.
+
+An object that inherits from the `NixASTNode` prototype also indirectly inherits
+from `NixObject`. This means that we can directly attach such an object to any
+other AST object. The generator uses the underlying `toNixAST()` function to
+automatically attach its AST representation.
+
+For example, we can also define the GNU Hello package as an object composed by
+a constructor function:
+
+```javascript
+function HelloModel(args) {
+    this.args = args;
+
+    this.name = "hello-2.10";
+    this.source = new HelloSourceModel(args);
+    this.meta = {
+        description: "A program that produces a familiar, friendly greeting",
+        homepage: "http://www.gnu.org/software/hello/manual",
+        license: "GPLv3+"
+    };
+}
+```
+
+In the above function, we construct a build recipe for GNU Hello using a
+convention that is not directly usable in Nix. The object also has a reference
+to a source object composed by the constructor function shown in the previous
+example.
+
+By inheriting from `NixASTNode` and overriding `toNixAST()` we can construct an
+AST for a Nix expression that builds the package:
+
+```javascript
+/* HelloModel inherits from NixASTNode */
+inherit(nijs.NixASTNode, HelloModel);
+
+/**
+ * @see NixASTNode#toNixAST
+ */
+HelloModel.prototype.toNixAST = function() {
+    return this.args.stdenv().mkDerivation ({
+        name: this.name,
+        src: this.source,
+        doCheck: true,
+        meta: this.meta
+    });
+};
+```
+
+The above function constructs an AST for a function invocation to
+`stdenv.mkDerivation {}`, using the object's properties a parameters. It
+directly refers to the source object (`this.source`) without any conversions --
+because the source object inherits from `NixAST` and (indirectly) from
+`NixObject`, the generator will automatically convert it to an AST for a
+`fetchurl {}` function invocation.
+
+In some cases, it may not be possible to inherit from `NixASTNode`, for example,
+when the object already inherits from another prototype that is beyond the
+user's control.
+
+It is also possible to use the `NixASTNode` constructor function as an adapter.
+For example, we can take any object with a `toNixAST()` function (such as an
+object creating a wrapper for the metadata):
+
+```javascript
+var self = this;
+
+var metadataWrapper = {
+    toNixAST: function() {
+        return {
+            description: self.meta.description,
+            homepage: new nijs.NixURL(self.meta.homepage),
+            license: self.meta.license
+        }
+    };
+};
+```
+
+By wrapping the `metadataWrapper` object in the `NixASTNode` constructor, we can
+convert it to an object that is an instanceof `NixASTNode`:
+
+```javascript
+new NixASTNode(metadataWrapper)
+```
+
 Examples
 ========
 The `tests/` directory contains a number of interesting example cases:

@@ -206,6 +206,13 @@ var pkgs = {
   
   underscoreTest : function() {
     return require('./pkgs/underscoreTest.js').pkg;
+  },
+
+  HelloModel : function() {
+    return require('./pkgs/HelloModel.js').pkg({
+      stdenv : pkgs.stdenv,
+      fetchurl : pkgs.fetchurl
+    });
   }
 };
 

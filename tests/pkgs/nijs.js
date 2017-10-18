@@ -2,7 +2,7 @@ var nijs = require('nijs');
 
 exports.pkg = function(args) {
   return args.buildNodePackage()({
-    name : "nijs-0.0.24",
+    name : "nijs-0.0.25",
     src : new nijs.NixFile({
       value : "../..",
       module : module
