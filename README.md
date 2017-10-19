@@ -686,7 +686,7 @@ a function invocation to `fetchurl {}`  in the Nix expression language with the
 An object that inherits from the `NixASTNode` prototype also indirectly inherits
 from `NixObject`. This means that we can directly attach such an object to any
 other AST object. The generator uses the underlying `toNixAST()` function to
-automatically attach its AST representation.
+automatically convert it to its AST representation.
 
 For example, we can also define the GNU Hello package as an object composed by
 a constructor function:
@@ -760,7 +760,7 @@ var metadataWrapper = {
 ```
 
 By wrapping the `metadataWrapper` object in the `NixASTNode` constructor, we can
-convert it to an object that is an instanceof `NixASTNode`:
+convert it to an object that is an instance of `NixASTNode`:
 
 ```javascript
 new nijs.NixASTNode(metadataWrapper)

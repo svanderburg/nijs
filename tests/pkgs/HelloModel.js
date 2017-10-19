@@ -1,6 +1,6 @@
 var nijs = require('nijs');
 var inherit = require('nijs/lib/ast/util/inherit.js').inherit;
-var HelloSourceModel = require('./HelloSourceModel.js').HelloSourceModel;
+var HelloSourceModel = require('./HelloModel/HelloSourceModel.js').HelloSourceModel;
 
 function HelloModel(args) {
     this.args = args;
