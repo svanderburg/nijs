@@ -1,14 +1,11 @@
 /**
- * @static @class nijs-execute.operations
- * Contains NiJS execute operations to be executed from the command-line interface.
+ * @module nijs-execute.operations
  */
 
 var path = require('path');
 var nijs = require('../../lib/nijs.js');
 
 /**
- * @member nijs-execute.operations
- *
  * Directly executes the given asynchronous package expression module.
  *
  * @param {Object} args Arguments to this function

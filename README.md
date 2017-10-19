@@ -754,7 +754,7 @@ var metadataWrapper = {
             description: self.meta.description,
             homepage: new nijs.NixURL(self.meta.homepage),
             license: self.meta.license
-        }
+        };
     };
 };
 ```
@@ -777,10 +777,7 @@ The `tests/` directory contains a number of interesting example cases:
 API documentation
 =================
 This package includes API documentation, which can be generated with
-[JSDuck](https://github.com/senchalabs/jsduck). The Makefile in this package
-contains a `duck` target to generate it and produces the HTML files in `build/`:
-
-    $ make duck
+[JSDoc](http://usejsdoc.org).
 
 License
 =======

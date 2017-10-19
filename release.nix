@@ -20,21 +20,15 @@ let
       (import ./default.nix {
         pkgs = import nixpkgs { inherit system; };
         inherit system;
-      }).package
+      }).package.override {
+        postInstall = ''
+          mkdir -p $out/share/doc/nijs
+          $out/lib/node_modules/nijs/node_modules/jsdoc/jsdoc.js -R README.md -r lib -d $out/share/doc/nijs/apidox
+          mkdir -p $out/nix-support
+          echo "doc api $out/share/doc/nijs/apidox" >> $out/nix-support/hydra-build-products
+        '';
+      }
     );
-
-    doc = pkgs.stdenv.mkDerivation {
-      name = "nijs-docs-${version}";
-      src = "${tarball}/tarballs/nijs-${version}.tgz";
-
-      buildInputs = [ pkgs.rubyLibs.jsduck ];
-      buildPhase = "make duck";
-      installPhase = ''
-        mkdir -p $out/nix-support
-        cp -R build/* $out
-        echo "doc api $out" >> $out/nix-support/hydra-build-products
-      '';
-    };
 
     tests = {
       proxytests = import ./tests/proxytests.nix {

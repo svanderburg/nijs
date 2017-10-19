@@ -1,14 +1,11 @@
 /**
- * @static @class nijs-build.operations
- * Contains NiJS build operations to be executed from the command-line interface.
+ * @module nijs-build.operations
  */
 var path = require('path');
 var slasp = require('slasp');
 var nijs = require('../../lib/nijs.js');
 
 /**
- * @member nijs-build.operations
- *
  * Imports the given package composition CommonJS module and evaluates the
  * specified package.
  *
@@ -25,8 +22,6 @@ function evaluatePackage(filename, attr, format) {
 }
 
 /**
- * @member nijs-build.operations
- *
  * Imports the given package composition CommonJS module and asynchronously
  * evaluates the specified package.
  *
@@ -51,8 +46,6 @@ function evaluatePackageAsync(filename, attr, format, callback) {
 }
 
 /**
- * @member nijs-build.operations
- *
  * Evaluates the given package expression and redirects it to the standard output.
  *
  * @param {Object} args Arguments to this function
@@ -73,8 +66,6 @@ exports.evaluateModule = function(args) {
 };
 
 /**
- * @member nijs-build.operations
- *
  * Evaluates the given package expression and invokes nix-build to build it.
  *
  * @param {Object} args Arguments to this function

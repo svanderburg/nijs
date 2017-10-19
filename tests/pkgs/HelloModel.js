@@ -29,7 +29,7 @@ HelloModel.prototype.toNixAST = function() {
                 description: self.meta.description,
                 homepage: new nijs.NixURL(self.meta.homepage),
                 license: self.meta.license
-            }
+            };
         }
     };
 

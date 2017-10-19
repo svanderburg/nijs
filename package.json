@@ -16,5 +16,8 @@
   "dependencies" : {
     "optparse" : ">= 1.0.3",
     "slasp": "0.0.4"
+  },
+  "devDependencies": {
+    "jsdoc": "*"
   }
 }
