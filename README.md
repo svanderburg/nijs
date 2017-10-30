@@ -755,7 +755,7 @@ var metadataWrapper = {
             homepage: new nijs.NixURL(self.meta.homepage),
             license: self.meta.license
         };
-    };
+    }
 };
 ```
 
