@@ -2,10 +2,10 @@ var nijs = require('nijs');
 
 exports.pkg = function(args) {
   return args.stdenv().mkDerivation({
-    name : "node-4.8.4",
+    name : "node-12.16.1",
     src : args.fetchurl()({
-      url : new nijs.NixURL("https://nodejs.org/dist/v4.8.4/node-v4.8.4.tar.xz"),
-      sha256 : "0nwh2m5f3rl7hiidhbpb9h7q3jaajvfdjqbi69wkrsfb90x67zim"
+      url : new nijs.NixURL("https://nodejs.org/download/release/latest-v12.x/node-v12.16.1.tar.xz"),
+      sha256 : "0ba1dla31z6i31z3723l74nky1v04irwbl3iaqmi0iicl1dq958a"
     }),
 
     dontDisableStatic: true,

@@ -9,7 +9,7 @@ exports.pkg = function(args, callback) {
         sha256 : "18dighcs333gsvajvvgqp8l4cx7h1x7yx9gd5xacnk80spyykrf3"
       }, callback);
     },
-    
+
     function(callback, src) {
       args.stdenv().mkDerivation({
         name : "zlib-1.2.11",

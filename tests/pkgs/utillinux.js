@@ -2,12 +2,12 @@ var nijs = require('nijs');
 
 exports.pkg = function(args) {
   return args.stdenv().mkDerivation({
-    name : "util-linux-2.30",
+    name : "util-linux-2.35",
     src : args.fetchurl()({
-      url : new nijs.NixURL("https://www.kernel.org/pub/linux/utils/util-linux/v2.30/util-linux-2.30.tar.xz"),
-      sha256 : "13d0ax8bcapga8phj2nclx86w57ddqxbr98ajibpzjq6d7zs8262"
+      url : new nijs.NixURL("https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v2.35/util-linux-2.35.1.tar.xz"),
+      sha256 : "1yfpy6bkab4jw61mpx48gfy24yrqp4a7arvpis8csrkk53fkxpnr"
     }),
-    
+
     configureFlags : [
       "--without-ncurses",
       "--disable-use-tty-group",
@@ -15,11 +15,11 @@ exports.pkg = function(args) {
       "--disable-makeinstall-setuid",
       "--disable-makeinstall-chown"
     ],
-    
+
     buildInputs : [
       args.zlib()
     ],
-    
+
     meta : {
       description : "A set of system utilities for Linux."
     }

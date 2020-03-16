@@ -10,12 +10,12 @@ let
     '';
     args = [];
   };
-  
+
   indirectionWget = indirectionWgetFun { inherit pkgs; };
 in
 stdenv.mkDerivation {
   name = "indirectionWget";
-  
+
   buildCommand = ''
     mkdir -p $out/bin
     ln -s ${indirectionWget}/bin/wget $out/bin/wget

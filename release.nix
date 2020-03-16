@@ -112,8 +112,8 @@ let
             };
 
             srcFile = pkgs.fetchurl {
-              url = ftp://ftp.astron.com/pub/file/file-5.32.tar.gz;
-              sha256 = "0l1bfa0icng9vdwya00ff48fhvjazi5610ylbhl35qi13d6xqfc6";
+              url = ftp://ftp.astron.com/pub/file/file-5.38.tar.gz;
+              sha256 = "0d7s376b4xqymnrsjxi3nsv3f5v89pzfspzml2pcajdk5by2yg2r";
             };
 
             buildCommand = ''
@@ -122,7 +122,7 @@ let
               mkdir -p $out/libpng/zlib/1.2.11
               cp $srcZlib $out/libpng/zlib/1.2.11/zlib-1.2.11.tar.gz
               mkdir -p $out/pub/file
-              cp $srcFile $out/pub/file/file-5.32.tar.gz
+              cp $srcFile $out/pub/file/file-5.38.tar.gz
             '';
           };
         in
@@ -143,9 +143,9 @@ let
 
               services.vsftpd.enable = true;
               services.vsftpd.anonymousUser = true;
-              services.vsftpd.anonymousUserHome = "/home/ftp";
+              services.vsftpd.anonymousUserHome = "/home/ftp/";
 
-              environment.systemPackages = [ nijs pkgs.stdenv pkgs.gcc pkgs.gnumake ];
+              environment.systemPackages = [ nijs pkgs.stdenv pkgs.gcc pkgs.gnumake pkgs.binutils ];
             };
           };
           testScript =
@@ -169,7 +169,7 @@ let
               # run it
               $machine->mustSucceed("cp -r ${documentRoot}/pub /home/ftp");
               $machine->waitForJob("vsftpd");
-              $result = $machine->mustSucceed("cd package/tests && nijs-execute pkgs-async.js -A file");
+              $machine->mustSucceed("cd package/tests && nijs-execute pkgs-async.js -A file");
               $machine->mustSucceed("\$HOME/.nijs/store/file-*/bin/file --version");
 
               # Two of file's shared libraries (libmagic and libz) should refer to the NiJS store

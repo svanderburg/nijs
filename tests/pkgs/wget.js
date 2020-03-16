@@ -2,20 +2,20 @@ var nijs = require('nijs');
 
 exports.pkg = function(args) {
   return args.stdenv().mkDerivation({
-    name : "wget-1.19",
-    
+    name : "wget-1.20.3",
+
     src : args.fetchurl()({
-      url : new nijs.NixURL("mirror://gnu/wget/wget-1.19.tar.gz"),
-      sha256 : "1s5dvlsh4c870n1m7zx6xwliwsxg71d2v7syjj79xxj5k01j75fx"
+      url : new nijs.NixURL("mirror://gnu/wget/wget-1.20.3.tar.gz"),
+      sha256 : "0bh9ll078rxqnbx1r142p5h00drarzggc1isiqfdna05cg3czk1i"
     }),
-    
-    configureFlags : "--with-ssl=openssl",
+
+    configureFlags : "--with-ssl=openssl --with-openssl=yes",
     openssl: args.openssl(),
     OPENSSL_CFLAGS : "-I$openssl/include" ,
     OPENSSL_LIBS : "-L$openssl/lib -lssl",
-    
+
     buildInputs : [ args.openssl() ],
-    
+
     meta : {
       description : "GNU Wget, a tool for retrieving files using HTTP, HTTPS, and FTP",
       license : "GPLv3+",
