@@ -25,6 +25,11 @@ var tmpdir = null;
 
 /* Define process rules for option parameters */
 
+parser.on(function(arg, value) {
+    process.stderr.write(arg + ": invalid option\n");
+    process.exit(1);
+});
+
 parser.on('help', function(arg, value) {
     help = true;
 });

@@ -36,7 +36,7 @@ function wrapInterface(interfaceFile) {
     nijsBuildProcess.stdout.on("data", function(data) {
         process.stdout.write(data);
     });
-    
+
     nijsBuildProcess.stderr.on("data", function(data) {
         process.stderr.write(data);
     });
