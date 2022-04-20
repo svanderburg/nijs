@@ -22,7 +22,7 @@ import (stdenv.mkDerivation {
 
     /* Convert the function arguments to JavaScript */
     var args = [
-      ${stdenv.lib.concatMapStrings (arg: nixToJS arg+",\n") args}
+      ${lib.concatMapStrings (arg: nixToJS arg+",\n") args}
     ];
 
     /* Define callback interfaces for asynchronous functions */
@@ -41,7 +41,7 @@ import (stdenv.mkDerivation {
     /* Evaluate the function */
     var result = fun.apply(this, args);
 
-    ${stdenv.lib.optionalString (!async) ''
+    ${lib.optionalString (!async) ''
       /* Return the evaluation result */
       nijsCallbacks.callback(null, result);
     ''}
