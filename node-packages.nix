@@ -251,7 +251,7 @@ let
   args = {
     name = "nijs";
     packageName = "nijs";
-    version = "0.0.25";
+    version = "0.0.26";
     src = ./.;
     dependencies = [
       sources."@babel/parser-7.17.9"
