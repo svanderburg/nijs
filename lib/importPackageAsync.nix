@@ -5,7 +5,7 @@ let
   pkgs = import nixpkgs { inherit system; };
 
   nijsInlineProxy = import ./inlineProxy.nix {
-    inherit (pkgs) stdenv writeTextFile nodejs;
+    inherit (pkgs) stdenv lib writeTextFile nodejs;
     inherit nijs;
   };
 
@@ -49,6 +49,7 @@ import (pkgs.stdenv.mkDerivation {
                           funExpr: new nijs.NixImport(new nijs.NixStorePath("${nijs}/lib/node_modules/nijs/lib/funProxy.nix")),
                           paramExpr: {
                               stdenv: new nijs.NixInherit("pkgs"),
+                              lib: new nijs.NixInherit("pkgs"),
                               nodejs: new nijs.NixInherit("pkgs"),
                               nijs: new nijs.NixInherit()
                           }
@@ -57,6 +58,7 @@ import (pkgs.stdenv.mkDerivation {
                           funExpr: new nijs.NixImport(new nijs.NixStorePath("${nijs}/lib/node_modules/nijs/lib/inlineProxy.nix")),
                           paramExpr: {
                               stdenv: new nijs.NixInherit("pkgs"),
+                              lib: new nijs.NixInherit("pkgs"),
                               writeTextFile: new nijs.NixInherit("pkgs"),
                               nodejs: new nijs.NixInherit("pkgs"),
                               nijs: new nijs.NixInherit()

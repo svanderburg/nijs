@@ -1,4 +1,4 @@
-{stdenv, writeTextFile, nodejs, nijs}:
+{stdenv, lib, writeTextFile, nodejs, nijs}:
 {name ? null, code, modules ? [], requires ? [], NODE_PATH ? "", codeIsFunction ? false}:
 
 writeTextFile {
@@ -8,14 +8,14 @@ writeTextFile {
     (
     source ${stdenv}/setup
     source ${nodejs}/nix-support/setup-hook
-    export NODE_PATH=$NODE_PATH${stdenv.lib.optionalString (NODE_PATH != "") ''''${NODE_PATH:+:}${NODE_PATH}''}
+    export NODE_PATH=$NODE_PATH${lib.optionalString (NODE_PATH != "") ''''${NODE_PATH:+:}${NODE_PATH}''}
     addNodePath ${nijs}
-    ${stdenv.lib.concatMapStrings (module: "addNodePath ${module}\n") modules}
-    
+    ${lib.concatMapStrings (module: "addNodePath ${module}\n") modules}
+
     (
     cat << "__EOF__"
     var nijs = require('nijs');
-    ${stdenv.lib.concatMapStrings (require: "var ${require.var} = require('${require.module}');\n") requires}
+    ${lib.concatMapStrings (require: "var ${require.var} = require('${require.module}');\n") requires}
 
     ${if codeIsFunction then ''
       var fun = ${code};

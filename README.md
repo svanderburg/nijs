@@ -277,11 +277,11 @@ fragment shows a Nix expression using the `sum()` JavaScript function to add two
 integers and writes the result to a text file in the Nix store:
 
 ```nix
-{stdenv, nodejs, nijs}:
+{stdenv, lib, nodejs, nijs}:
 
 let
   nijsFunProxy = import "${nijs}/lib/node_modules/nijs/lib/funProxy.nix" {
-    inherit stdenv nodejs nijs;
+    inherit stdenv lib nodejs nijs;
   };
 
   sum = a: b: nijsFunProxy {
@@ -296,7 +296,7 @@ let
 in
 stdenv.mkDerivation {
   name = "sum";
- 
+
   buildCommand = ''
     echo ${toString (sum 1 2)} > $out
   '';
@@ -324,24 +324,24 @@ them available to that function. The following code fragment uses the [Underscor
 library to convert a list of integers to a list of strings:
 
 ```nix
-{stdenv, nodejs, nijs, underscore}:
+{stdenv, lib, nodejs, nijs, underscore}:
 
 let
   nijsFunProxy = import "${nijs}/lib/node_modules/nijs/lib/funProxy.nix" {
-    inherit stdenv nodejs nijs;
+    inherit stdenv lib nodejs nijs;
   };
-  
+
   underscoreTestFun = numbers: nijsFunProxy {
     name = "underscoreTestFun";
     function = ''
       function underscoreTestFun(numbers) {
         var words = [ "one", "two", "three", "four", "five" ];
         var result = [];
-      
+
         _.each(numbers, function(elem) {
           result.push(words[elem - 1]);
         });
-    
+
         return result;
       }
     '';
@@ -354,7 +354,7 @@ let
 in
 stdenv.mkDerivation {
   name = "underscoreTest";
- 
+
   buildCommand = ''
     echo ${toString (underscoreTestFun [ 5 4 3 2 1 ])} > $out
   '';
@@ -383,13 +383,13 @@ The following example uses a timer that calls the success callback function
 after three seconds, with a standard greeting message:
 
 ```nix
-{stdenv, nodejs, nijs}:
+{stdenv, lib, nodejs, nijs}:
 
 let
   nijsFunProxy = import "${nijs}/lib/node_modules/nijs/lib/funProxy.nix" {
-    inherit stdenv nodejs nijs;
+    inherit stdenv lib nodejs nijs;
   };
-  
+
   timerTest = message: nijsFunProxy {
     name = "timerTest";
     function = ''
@@ -405,7 +405,7 @@ let
 in
 stdenv.mkDerivation {
   name = "timerTest";
- 
+
   buildCommand = ''
     echo ${timerTest "Hello world! The timer test works!"} > $out
   '';
@@ -425,11 +425,11 @@ JavaScript code, instead of embedded shell code. The `nijsInlineProxy` function
 allows a developer to write inline JavaScript code inside a Nix expression:
 
 ```nix
-{stdenv, writeTextFile, nodejs, nijs}:
+{stdenv, lib, writeTextFile, nodejs, nijs}:
 
 let
   nijsInlineProxy = import "${nijs}/lib/node_modules/nijs/lib/inlineProxy.nix" {
-    inherit stdenv writeTextFile nodejs nijs;
+    inherit stdenv lib writeTextFile nodejs nijs;
   };
 in
 stdenv.mkDerivation {
