@@ -2,11 +2,11 @@ var nijs = require('nijs');
 
 exports.pkg = function(args) {
   return args.stdenv().mkDerivation({
-    name : "wget-1.20.3",
+    name : "wget-1.21",
 
     src : args.fetchurl()({
-      url : new nijs.NixURL("mirror://gnu/wget/wget-1.20.3.tar.gz"),
-      sha256 : "0bh9ll078rxqnbx1r142p5h00drarzggc1isiqfdna05cg3czk1i"
+      url : new nijs.NixURL("mirror://gnu/wget/wget-1.21.tar.gz"),
+      sha256 : "09cknh5dbfa0kgw4jksi0xd224cwq50qsccwf34kd661s2dimg5k"
     }),
 
     configureFlags : "--with-ssl=openssl --with-openssl=yes",

@@ -5,7 +5,7 @@ var HelloSourceModel = require('./HelloModel/HelloSourceModel.js').HelloSourceMo
 function HelloModel(args) {
     this.args = args;
 
-    this.name = "hello-2.10";
+    this.name = "hello-2.12";
     this.source = new HelloSourceModel(args);
     this.meta = {
         description: "A program that produces a familiar, friendly greeting",

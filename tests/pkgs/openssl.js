@@ -2,11 +2,11 @@ var nijs = require('nijs');
 
 exports.pkg = function(args) {
   return args.stdenv().mkDerivation ({
-    name : "openssl-1.0.2u",
+    name : "openssl-1.1.1n",
 
     src : args.fetchurl()({
-      url : new nijs.NixURL("https://www.openssl.org/source/old/1.0.2/openssl-1.0.2u.tar.gz"),
-      sha256 : "05lxcs4hzyfqd5jn0d9p0fvqna62v2s4pc9qgmq0dpcknkzwdl7c"
+      url : new nijs.NixURL("https://www.openssl.org/source/openssl-1.1.1n.tar.gz"),
+      sha256 : "0ymif8rlc5cf5qp5bh2pxlrgq6xryh7g4sqfvrdjg9gnli8ypp20"
     }),
 
     buildInputs : [ args.perl() ],

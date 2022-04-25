@@ -8,10 +8,10 @@ exports.pkg = function(args) {
   ];
 
   return args.stdenv().mkDerivation({
-    name : "python-2.7.17",
+    name : "python-2.7.18",
     src : args.fetchurl()({
-      url : new nijs.NixURL("http://www.python.org/ftp/python/2.7.17/Python-2.7.17.tar.xz"),
-      sha256 : "0hds28cg226m8j8sr394nm9yc4gxhvlv109w0avsf2mxrlrz0hsd"
+      url : new nijs.NixURL("http://www.python.org/ftp/python/2.7.18/Python-2.7.18.tar.xz"),
+      sha256 : "0hzgxl94hnflis0d6m4szjx0b52gah7wpmcg5g00q7am6xwhwb5n"
     }),
 
     patches : [

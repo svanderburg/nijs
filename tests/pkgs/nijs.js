@@ -2,7 +2,7 @@ var nijs = require('nijs');
 
 exports.pkg = function(args) {
   return args.buildNodePackage()({
-    name : "nijs-0.0.25",
+    name : "nijs-0.0.26",
     src : new nijs.NixFile({
       value : "../..",
       module : module
@@ -11,7 +11,7 @@ exports.pkg = function(args) {
       args.optparse(),
       args.slasp()
     ],
-    
+
     meta : {
       description : "An internal DSL for Nix in JavaScript"
     }

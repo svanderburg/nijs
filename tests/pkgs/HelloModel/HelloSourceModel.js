@@ -3,8 +3,8 @@ var inherit = require('nijs/lib/ast/util/inherit.js').inherit;
 
 function HelloSourceModel(args) {
     this.args = args;
-    this.src = "mirror://gnu/hello/hello-2.10.tar.gz";
-    this.sha256 = "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i";
+    this.src = "mirror://gnu/hello/hello-2.12.tar.gz";
+    this.sha256 = "1ayhp9v4m4rdhjmnl2bq3cibrbqqkgjbl3s7yk2nhlh8vj3ay16g";
 }
 
 /* HelloSourceModel inherits from NixASTNode */
