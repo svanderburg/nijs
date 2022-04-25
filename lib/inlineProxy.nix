@@ -6,8 +6,8 @@ writeTextFile {
   executable = true;
   text = ''
     (
+    buildInputs="${nodejs}"
     source ${stdenv}/setup
-    source ${nodejs}/nix-support/setup-hook
     export NODE_PATH=$NODE_PATH${lib.optionalString (NODE_PATH != "") ''''${NODE_PATH:+:}${NODE_PATH}''}
     addNodePath ${nijs}
     ${lib.concatMapStrings (module: "addNodePath ${module}\n") modules}
