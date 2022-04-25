@@ -9,7 +9,7 @@ addToSearchPath()
 {
     local varName="$1"
     local value="$2"
-    
+
     if [ -d "$value" ]
     then
         eval export $varName="$value${!varName:+:}${!varName}"
@@ -33,24 +33,30 @@ addToLIBRARY_PATH()
     addToSearchPath LIBRARY_PATH "$1/lib64"
 }
 
-envHooks="addToPATH addToCPATH addToLIBRARY_PATH"
+envHooks=( "addToPATH" "addToCPATH" "addToLIBRARY_PATH" )
 
 addToEnv()
 {
     local pkg=$1
-    
-    for i in $envHooks
+
+    for i in "${envHooks[@]}"
     do
         $i "$pkg"
     done
 }
 
+addEnvHooks()
+{
+    local hostOffset="$1" # Ignored in this builder, but for feature parity with Nixpkgs stdenv
+    envHooks+=("$2")
+}
+
 importBuildInputs()
 {
     local buildInputs="$@"
-    
+
     # Modify environment variables (such as PATH) so that the build inputs can be found
-    
+
     for i in $buildInputs
     do
         addToEnv $i
@@ -101,7 +107,7 @@ runHook()
 {
     local hookName=$1
     local hookType=$(type -t $hookName)
-    
+
     if [ -z "${!hookName}" ]
     then
         case "$hookType" in
@@ -128,7 +134,7 @@ executePhase()
 {
     local phase=$1
     local dontVariableName=dont${phase^}
-    
+
     if [ -z "${!dontVariableName}" ]
     then
         runHook pre${phase^}
@@ -142,7 +148,7 @@ executePhase()
 unpackFile()
 {
     local packedFile="$1"
-    
+
     case "$packedFile" in
         *.tar|*.tar.gz|*.tar.bz2|*.tgz|*.tar.xz|*.tar.lzma)
             tar xfv "$packedFile"
@@ -160,12 +166,12 @@ unpackPhase()
     then
         srcs=$src
     fi
-    
+
     for i in $srcs
     do
         unpackFile $i
     done
-    
+
     # Enter source directory
     if [ -z "$sourceRoot" ]
     then
@@ -178,7 +184,7 @@ unpackPhase()
 uncompressFile()
 {
     local file="$1"
-    
+
     for i in $uncompressHooks
     do
         case "$i" in
@@ -237,27 +243,27 @@ installPhase()
 if [ -z "$buildCommand" ]
 then
     # Set some default values
-    
+
     if [ -z "$configureScript" ]
     then
         configureScript="./configure"
     fi
-    
+
     if [ -z "$prefix" ]
     then
         prefix='--prefix=$out'
     fi
-    
+
     if [ -z "$makefile" ]
     then
         makefile="Makefile"
     fi
-    
+
     if [ -z "$phases" ]
     then
         phases="unpack patch configure build install"
     fi
-    
+
     # Execute phases
 
     for phase in $phases
