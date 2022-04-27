@@ -9,7 +9,9 @@ exports.pkg = function(args) {
     }),
 
     dontDisableStatic: true,
-    preConfigure : 'sed -i -e "s|#!/usr/bin/env python|#! $(type -p python)|" configure',
+
+    preConfigure: 'sed -i -e "s|#!/usr/bin/env python|#! $(type -p python)|" configure',
+    postInstall: 'sed -i -e "s|#!/usr/bin/env node|#! $out/bin/node|" $out/lib/node_modules/npm/bin/npm-cli.js',
 
     configureFlags : [ "--shared-openssl", "--shared-zlib" ],
 
