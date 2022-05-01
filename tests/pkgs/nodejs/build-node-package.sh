@@ -7,6 +7,7 @@ unpackPhase() {
 configurePhase() {
     runHook preConfigure
     mkdir -p node_modules
+
     for i in $deps
     do
         for j in $i/lib/node_modules/*
@@ -17,6 +18,7 @@ configurePhase() {
             fi
         done
     done
+
     export HOME=$(pwd)
     runHook postConfigure
 }

@@ -106,21 +106,21 @@ if(help) {
         }
     }
 
-    process.stdout.write("Usage: " + executable + " [options] -A package pkgs.js\n\n");
-    
+    process.stdout.write("Usage: nijs-build [options] -A package pkgs.js\n\n");
+
     process.stdout.write("Converts a given CommonJS module defining a Nix expression in a semi-abstract\n");
     process.stdout.write("syntax into a Nix expression and builds it using `nix-build'\n\n");
-    
+
     process.stdout.write("Options:\n");
-    
+
     var maxlen = 20;
-    
+
     for(var i = 0; i < switches.length; i++) {
-    
+
         var currentSwitch = switches[i];
-        
+
         process.stdout.write("  ");
-        
+
         if(currentSwitch.length == 3) {
             process.stdout.write(currentSwitch[0] + ", "+currentSwitch[1]);
             displayTab(currentSwitch[0].length + 2 + currentSwitch[1].length, maxlen);
@@ -130,10 +130,10 @@ if(help) {
             displayTab(currentSwitch[0].length, maxlen);
             process.stdout.write(currentSwitch[1]);
         }
-        
+
         process.stdout.write("\n");
     }
-    
+
     process.exit(0);
 }
 
